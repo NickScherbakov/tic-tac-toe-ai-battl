@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useKV } from '@github/spark/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CaretRight, ArrowClockwise, Coins } from '@phosphor-icons/react';
+import { CaretRight, ArrowClockwise, FireSimple } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -240,7 +240,7 @@ function App() {
           </p>
           <div className="mt-3 flex justify-center">
             <Badge variant="secondary" className="px-3 py-1 flex items-center gap-2">
-              <Coins className="w-4 h-4 text-purple-600" weight="duotone" />
+              <FireSimple className="w-4 h-4 text-purple-600" weight="duotone" />
               <span>{t(currentLanguage, 'balance')}:</span>
               <span className="font-semibold">{currentBalance}</span>
               <span>{t(currentLanguage, 'matches')}</span>

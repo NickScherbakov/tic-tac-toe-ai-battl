@@ -6,10 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Coins, ChartLine } from '@phosphor-icons/react';
+import { FireSimple, ChartLine } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
-import { Language, t } from '@/lib/i18n';
-
+import { Language, t } from '@/lib/i18n';import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 interface BettingPanelProps {
   balance: number;
   xOdds: number;
@@ -66,7 +65,7 @@ export function BettingPanel({
     <Card className="p-6 border-purple-200 dark:border-purple-900 shadow-lg">
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Coins className="w-6 h-6 text-purple-600" weight="duotone" />
+          <FireSimple className="w-6 h-6 text-purple-600" weight="duotone" />
           <div>
             <h3 className="font-semibold text-lg">{t(language, 'totalizator')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -79,64 +78,57 @@ export function BettingPanel({
 
         <div className="space-y-3">
           <Label className="text-sm font-medium">{t(language, 'selectOutcome')}</Label>
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant={selectedPlayer === 'X' ? 'default' : 'outline'}
-              onClick={() => setSelectedPlayer('X')}
-              disabled={disabled}
-              aria-pressed={selectedPlayer === 'X'}
+          <RadioGroup
+            value={selectedPlayer || ''}
+            onValueChange={(v) => setSelectedPlayer(v as Player | 'draw')}
+            disabled={disabled}
+            className="grid grid-cols-3 gap-2"
+          >
+            <label
+              htmlFor="outcome-x"
               className={
                 selectedPlayer === 'X'
-                  ? 'relative ring-2 ring-[var(--color-player-x)] bg-[var(--color-player-x)]/10'
-                  : 'relative'
+                  ? 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-[var(--color-player-x)] bg-[var(--color-player-x)]/10 p-3 cursor-pointer transition-colors'
+                  : 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-border bg-background p-3 cursor-pointer hover:bg-accent/50 transition-colors'
               }
             >
-              <div className="flex flex-col items-center gap-1">
-                <span>{t(language, 'xPlayer')}</span>
-                <Badge variant="secondary" className="text-xs">
-                  {xOdds.toFixed(2)}x
-                </Badge>
-              </div>
-            </Button>
+              <RadioGroupItem value="X" id="outcome-x" />
+              <span className="font-medium">{t(language, 'xPlayer')}</span>
+              <Badge variant="secondary" className="text-xs">
+                {xOdds.toFixed(2)}x
+              </Badge>
+            </label>
 
-            <Button
-              variant={selectedPlayer === 'O' ? 'default' : 'outline'}
-              onClick={() => setSelectedPlayer('O')}
-              disabled={disabled}
-              aria-pressed={selectedPlayer === 'O'}
+            <label
+              htmlFor="outcome-o"
               className={
                 selectedPlayer === 'O'
-                  ? 'relative ring-2 ring-[var(--color-player-o)] bg-[var(--color-player-o)]/10'
-                  : 'relative'
+                  ? 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-[var(--color-player-o)] bg-[var(--color-player-o)]/10 p-3 cursor-pointer transition-colors'
+                  : 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-border bg-background p-3 cursor-pointer hover:bg-accent/50 transition-colors'
               }
             >
-              <div className="flex flex-col items-center gap-1">
-                <span>{t(language, 'oPlayer')}</span>
-                <Badge variant="secondary" className="text-xs">
-                  {oOdds.toFixed(2)}x
-                </Badge>
-              </div>
-            </Button>
+              <RadioGroupItem value="O" id="outcome-o" />
+              <span className="font-medium">{t(language, 'oPlayer')}</span>
+              <Badge variant="secondary" className="text-xs">
+                {oOdds.toFixed(2)}x
+              </Badge>
+            </label>
 
-            <Button
-              variant={selectedPlayer === 'draw' ? 'default' : 'outline'}
-              onClick={() => setSelectedPlayer('draw')}
-              disabled={disabled}
-              aria-pressed={selectedPlayer === 'draw'}
+            <label
+              htmlFor="outcome-draw"
               className={
                 selectedPlayer === 'draw'
-                  ? 'relative ring-2 ring-yellow-500 bg-yellow-100 dark:bg-yellow-900/30'
-                  : 'relative'
+                  ? 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 p-3 cursor-pointer transition-colors'
+                  : 'relative flex flex-col items-center gap-2 rounded-lg border-2 border-border bg-background p-3 cursor-pointer hover:bg-accent/50 transition-colors'
               }
             >
-              <div className="flex flex-col items-center gap-1">
-                <span>{t(language, 'draw')}</span>
-                <Badge variant="secondary" className="text-xs">
-                  {drawOdds.toFixed(2)}x
-                </Badge>
-              </div>
-            </Button>
-          </div>
+              <RadioGroupItem value="draw" id="outcome-draw" />
+              <span className="font-medium">{t(language, 'draw')}</span>
+              <Badge variant="secondary" className="text-xs">
+                {drawOdds.toFixed(2)}x
+              </Badge>
+            </label>
+          </RadioGroup>
         </div>
 
         <div className="space-y-3">
@@ -196,7 +188,7 @@ export function BettingPanel({
           className="w-full"
           size="lg"
         >
-          <Coins className="mr-2" weight="duotone" />
+          <FireSimple className="mr-2" weight="duotone" />
           {t(language, 'placeBet')}
         </Button>
 
