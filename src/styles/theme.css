@@ -85,6 +85,15 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+@layer components {
+  /* Glass card and chip styles */
+  .arena-bg { background: var(--arena-gradient), var(--color-bg); }
+  .glass-card { background-color: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(var(--glass-blur)); }
+  .balance-chip { background-color: var(--chip-bg); border: 1px solid var(--chip-border); color: var(--chip-text); }
+  .neon-x { color: var(--neon-x); }
+  .neon-o { color: var(--neon-o); }
+  .neon-draw { color: var(--neon-draw); }
+}
 
 @layer base {
   #spark-app {

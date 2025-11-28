@@ -232,7 +232,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen arena-bg py-10 px-4" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-6xl mx-auto space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -249,7 +249,7 @@ function App() {
             {t(currentLanguage, 'subtitle')}
           </p>
           <div className="mt-3 flex justify-center">
-            <Badge variant="secondary" className="px-3 py-1 flex items-center gap-2">
+            <Badge variant="secondary" className="balance-chip px-3 py-1 flex items-center gap-2">
               <span className="text-lg">🪵</span>
               <span>{t(currentLanguage, 'balance')}:</span>
               <span className="font-semibold">{currentBalance}</span>
@@ -322,7 +322,7 @@ function App() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="p-6 space-y-6">
+            <Card className="glass-card p-6 space-y-6">
               <h2 className="text-xl font-semibold">{t(currentLanguage, 'gameBoard')}</h2>
               
               <GameBoard
@@ -380,7 +380,7 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="p-6 space-y-4">
+          <Card className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold">{t(currentLanguage, 'controls')}</h2>
             
             <SpeedControl
@@ -398,7 +398,7 @@ function App() {
           transition={{ delay: 0.4 }}
         >
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6">
+            <Card className="glass-card p-6">
               <h2 className="text-xl font-semibold mb-4">{t(currentLanguage, 'statistics')}</h2>
               <StatsDisplay stats={currentStats} language={currentLanguage} />
             </Card>

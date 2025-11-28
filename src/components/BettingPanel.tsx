@@ -68,14 +68,16 @@ export function BettingPanel({
   const quickBetAmounts = [10, 25, 50, 100];
 
   return (
-    <Card className="p-6 border-purple-200 dark:border-purple-900 shadow-lg">
+    <Card className="glass-card p-6 border-purple-200 dark:border-purple-900 shadow-lg">
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <div className="text-3xl">🪵</div>
           <div>
             <h3 className="font-semibold text-lg">{t(language, 'totalizator')}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t(language, 'balance')}: <span className="font-bold text-purple-600">{balance}</span> {t(language, 'matches')}
+            <p className="text-sm text-gray-600 dark:text-gray-400 balance-chip inline-flex items-center gap-2 px-2 py-1 rounded-md">
+              <span>{t(language, 'balance')}:</span>
+              <span className="font-bold text-purple-300">{balance}</span>
+              <span>{t(language, 'matches')}</span>
             </p>
           </div>
         </div>

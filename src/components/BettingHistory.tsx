@@ -76,7 +76,7 @@ export function BettingHistory({ results, netProfit, language }: BettingHistoryP
   };
 
   return (
-    <Card className="p-6 space-y-4">
+    <Card className="glass-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{t(language, 'bettingHistory')}</h2>
         <div className="flex items-center gap-2">
