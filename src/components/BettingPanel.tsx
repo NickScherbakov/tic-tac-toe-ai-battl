@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { FireSimple, ChartLine } from '@phosphor-icons/react';
+import { ChartLine } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
-import { Language, t } from '@/lib/i18n';import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Language, t } from '@/lib/i18n';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 interface BettingPanelProps {
   balance: number;
   xOdds: number;
@@ -65,7 +66,7 @@ export function BettingPanel({
     <Card className="p-6 border-purple-200 dark:border-purple-900 shadow-lg">
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <FireSimple className="w-6 h-6 text-purple-600" weight="duotone" />
+          <div className="text-3xl">🪵</div>
           <div>
             <h3 className="font-semibold text-lg">{t(language, 'totalizator')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -188,7 +189,7 @@ export function BettingPanel({
           className="w-full"
           size="lg"
         >
-          <FireSimple className="mr-2" weight="duotone" />
+          <span className="mr-2 text-lg">🪵</span>
           {t(language, 'placeBet')}
         </Button>
 
