@@ -11,6 +11,8 @@ import { PlayerInfo } from '@/components/PlayerInfo';
 import { StatsDisplay } from '@/components/StatsDisplay';
 import { SpeedControl, GameSpeed, getSpeedDelay } from '@/components/SpeedControl';
 import { StrategySelect } from '@/components/StrategySelect';
+import { BettingPanel, BetChoice } from '@/components/BettingPanel';
+import { BettingResult } from '@/components/BettingResult';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { toast } from 'sonner';
@@ -33,6 +35,12 @@ function App() {
   const [xStrategy, setXStrategy] = useKV<AIStrategy>('x-strategy', 'minimax');
   const [oStrategy, setOStrategy] = useKV<AIStrategy>('o-strategy', 'random');
   const [speed, setSpeed] = useKV<GameSpeed>('game-speed', 'normal');
+  
+  // Betting state
+  const [matches, setMatches] = useKV<number>('player-matches', 100);
+  const [currentBet, setCurrentBet] = useState(0);
+  const [betChoice, setBetChoice] = useState<BetChoice>(null);
+  const [lastBetResult, setLastBetResult] = useState<{ won: boolean; amount: number } | null>(null);
 
   const gameTimeoutRef = useRef<number | null>(null);
 
@@ -40,9 +48,15 @@ function App() {
   const currentXStrategy = xStrategy ?? 'minimax';
   const currentOStrategy = oStrategy ?? 'random';
   const currentSpeed = speed ?? 'normal';
+  const currentMatches = matches ?? 100;
 
   const handleStartGame = () => {
     if (status === 'playing') return;
+    
+    // Deduct bet from matches when game starts
+    if (betChoice && currentBet > 0) {
+      setMatches((prev) => (prev ?? 100) - currentBet);
+    }
     
     setBoard(Array(9).fill(null));
     setCurrentPlayer('X');
@@ -51,6 +65,7 @@ function App() {
     setWinningLine(null);
     setLastMove(null);
     setIsThinking(true);
+    setLastBetResult(null);
   };
 
   const handleNewGame = () => {
@@ -58,7 +73,18 @@ function App() {
       clearTimeout(gameTimeoutRef.current);
       gameTimeoutRef.current = null;
     }
-    handleStartGame();
+    // Reset betting for new game
+    setCurrentBet(0);
+    setBetChoice(null);
+    setLastBetResult(null);
+    
+    setBoard(Array(9).fill(null));
+    setCurrentPlayer('X');
+    setStatus('idle');
+    setWinner(null);
+    setWinningLine(null);
+    setLastMove(null);
+    setIsThinking(false);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -88,6 +114,28 @@ function App() {
         else if (result.winner === 'draw') newStats.draws++;
         return newStats;
       });
+
+      // Handle betting result
+      if (betChoice && currentBet > 0) {
+        const isDraw = result.winner === 'draw';
+        const won = result.winner === betChoice;
+        
+        if (isDraw) {
+          // Return bet on draw
+          setMatches((prev) => (prev ?? 0) + currentBet);
+          setLastBetResult({ won: false, amount: currentBet });
+          toast.info(`Ничья! Ваша ставка ${currentBet} спичек возвращена.`);
+        } else if (won) {
+          // Win: return bet + winnings (2x)
+          setMatches((prev) => (prev ?? 0) + currentBet * 2);
+          setLastBetResult({ won: true, amount: currentBet });
+          toast.success(`Победа! Вы выиграли ${currentBet * 2} спичек!`);
+        } else {
+          // Lose: bet already deducted
+          setLastBetResult({ won: false, amount: currentBet });
+          toast.error(`Проигрыш! Вы потеряли ${currentBet} спичек.`);
+        }
+      }
 
       const resultMessage = 
         result.winner === 'draw' 
@@ -143,7 +191,7 @@ function App() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -187,9 +235,10 @@ function App() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="md:col-span-2 lg:col-span-1"
           >
             <Card className="p-6 space-y-6">
               <h2 className="text-xl font-semibold">Game Board</h2>
@@ -219,6 +268,17 @@ function App() {
                 )}
               </AnimatePresence>
 
+              <AnimatePresence mode="wait">
+                {winner && lastBetResult && (
+                  <BettingResult
+                    winner={winner}
+                    betChoice={betChoice}
+                    betAmount={lastBetResult.amount}
+                    won={lastBetResult.won}
+                  />
+                )}
+              </AnimatePresence>
+
               <div className="flex gap-3">
                 <Button
                   onClick={handleStartGame}
@@ -240,6 +300,24 @@ function App() {
                   New Game
                 </Button>
               </div>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="md:col-span-2 lg:col-span-1"
+          >
+            <Card className="p-6">
+              <BettingPanel
+                matches={currentMatches}
+                currentBet={currentBet}
+                betChoice={betChoice}
+                onBetChange={setCurrentBet}
+                onBetChoiceChange={setBetChoice}
+                disabled={status === 'playing'}
+              />
             </Card>
           </motion.div>
         </div>
