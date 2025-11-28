@@ -20,8 +20,8 @@ export function PlayerInfo({ player, strategy, strategyName, isActive, isThinkin
   return (
     <motion.div
       className={cn(
-        'p-4 rounded-lg border-2 transition-all duration-300',
-        isActive ? 'border-accent bg-accent/5' : 'border-border bg-card'
+        'p-4 rounded-lg border-2 transition-all duration-300 glass-card',
+        isActive ? 'border-accent' : 'border-border'
       )}
       animate={isActive && isThinking ? { scale: [1, 1.02, 1] } : { scale: 1 }}
       transition={{ duration: 1, repeat: isActive && isThinking ? Infinity : 0 }}
@@ -40,8 +40,9 @@ export function PlayerInfo({ player, strategy, strategyName, isActive, isThinkin
           </div>
           <div>
             <h3 className="font-semibold text-lg">Player {player}</h3>
-            <Badge variant="secondary" className="mt-1">
-              {strategyName}
+            <Badge variant="secondary" className="mt-1 balance-chip inline-flex items-center gap-2">
+              <span>{strategyName}</span>
+              <span className="text-lg">🪵</span>
             </Badge>
           </div>
         </div>

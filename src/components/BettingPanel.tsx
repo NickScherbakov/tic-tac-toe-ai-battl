@@ -101,9 +101,10 @@ export function BettingPanel({
               }
             >
               <RadioGroupItem value="X" id="outcome-x" />
-              <span className="font-medium">{t(language, 'xPlayer')}</span>
-              <Badge variant="secondary" className="text-xs">
-                {xOdds.toFixed(2)}x
+              <span className="font-medium neon-x">{t(language, 'xPlayer')}</span>
+              <Badge variant="secondary" className="text-xs balance-chip inline-flex items-center gap-1">
+                <span>{xOdds.toFixed(2)}x</span>
+                <span>🪵</span>
               </Badge>
             </label>
 
@@ -116,9 +117,10 @@ export function BettingPanel({
               }
             >
               <RadioGroupItem value="O" id="outcome-o" />
-              <span className="font-medium">{t(language, 'oPlayer')}</span>
-              <Badge variant="secondary" className="text-xs">
-                {oOdds.toFixed(2)}x
+              <span className="font-medium neon-o">{t(language, 'oPlayer')}</span>
+              <Badge variant="secondary" className="text-xs balance-chip inline-flex items-center gap-1">
+                <span>{oOdds.toFixed(2)}x</span>
+                <span>🪵</span>
               </Badge>
             </label>
 
@@ -131,9 +133,10 @@ export function BettingPanel({
               }
             >
               <RadioGroupItem value="draw" id="outcome-draw" />
-              <span className="font-medium">{t(language, 'draw')}</span>
-              <Badge variant="secondary" className="text-xs">
-                {drawOdds.toFixed(2)}x
+              <span className="font-medium neon-draw">{t(language, 'draw')}</span>
+              <Badge variant="secondary" className="text-xs balance-chip inline-flex items-center gap-1">
+                <span>{drawOdds.toFixed(2)}x</span>
+                <span>🪵</span>
               </Badge>
             </label>
           </RadioGroup>
