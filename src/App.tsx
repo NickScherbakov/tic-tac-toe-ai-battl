@@ -394,7 +394,7 @@ function App() {
             
             <BettingHistory
               results={currentBetResults}
-              netProfit={currentBetResults.reduce((sum, r) => sum + (r.profit - r.amount), 0)}
+              netProfit={currentBetResults.reduce((sum, r) => sum + r.profit, 0)}
               language={currentLanguage}
             />
           </div>

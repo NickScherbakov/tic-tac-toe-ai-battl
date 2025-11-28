@@ -132,7 +132,7 @@ export function BettingHistory({ results, netProfit, language }: BettingHistoryP
                       </span>
                     </div>
                     <div className={`font-bold ${result.profit > 0 ? 'text-green-600' : result.profit < 0 ? 'text-red-600' : 'text-yellow-600'}`}>
-                      {result.profit > 0 ? '+' : ''}{result.profit - result.amount}
+                      {result.profit > 0 ? '+' : ''}{result.profit}
                     </div>
                   </div>
                 </motion.div>
