@@ -19,6 +19,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
+import { playMoveSound, playWinSound, playBetSound, playEarnSound } from '@/lib/sound';
 import { Language, t } from '@/lib/i18n';
 import { toast } from 'sonner';
 
@@ -47,6 +48,8 @@ function App() {
     const [balanceBeforeBet, setBalanceBeforeBet] = useState<number | null>(null);
   const [betResults, setBetResults] = useKV<BetResult[]>('bet-results', []);
   const [language, setLanguage] = useKV<Language>('language', 'en');
+  const [soundEnabled] = useKV<boolean>('fx-sound', true);
+  const [animEnabled] = useKV<boolean>('fx-anim', true);
 
   const gameTimeoutRef = useRef<number | null>(null);
 
@@ -110,12 +113,14 @@ function App() {
       ? t(currentLanguage, 'toasts.betAcceptedDraw', { amount: amount.toString() })
       : t(currentLanguage, 'toasts.betAccepted', { amount: amount.toString(), player });
     toast.success(message);
+    playBetSound(!!soundEnabled);
   };
 
   const handleEarnMatches = () => {
     const EARN_AMOUNT = 50;
     setBalance(currentBalance + EARN_AMOUNT);
     toast.success(t(currentLanguage, 'toasts.matchesEarned', { amount: EARN_AMOUNT.toString() }));
+    playEarnSound(!!soundEnabled);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -128,6 +133,7 @@ function App() {
     
     setBoard(newBoard);
     setLastMove(move);
+    playMoveSound(!!soundEnabled);
     
     const result = checkWinner(newBoard);
     
@@ -200,6 +206,7 @@ function App() {
           : t(currentLanguage, 'toasts.playerWinsWith', { player: result.winner, strategy: strategyName });
       
       toast.success(resultMessage);
+      playWinSound(!!soundEnabled);
     } else {
       setCurrentPlayer(player === 'X' ? 'O' : 'X');
     }
@@ -391,6 +398,19 @@ function App() {
               disabled={status === 'playing'}
               language={currentLanguage}
             />
+            <div className="mt-4">
+              {/* FX toggles */}
+              <div className="flex gap-3">
+                <div className="glass-card p-3 rounded-md flex items-center gap-2">
+                  <span className="text-xs">Sound</span>
+                  <Badge variant="secondary" className={soundEnabled ? 'balance-chip' : ''}>{soundEnabled ? 'ON' : 'OFF'}</Badge>
+                </div>
+                <div className="glass-card p-3 rounded-md flex items-center gap-2">
+                  <span className="text-xs">FX</span>
+                  <Badge variant="secondary" className={animEnabled ? 'balance-chip' : ''}>{animEnabled ? 'ON' : 'OFF'}</Badge>
+                </div>
+              </div>
+            </div>
           </Card>
         </motion.div>
 
