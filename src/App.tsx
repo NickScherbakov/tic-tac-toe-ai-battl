@@ -17,6 +17,7 @@ import { BettingHistory } from '@/components/BettingHistory';
 import { FloatingMatches } from '@/components/FloatingMatches';
 import { OnboardingOverlay } from '@/components/OnboardingOverlay';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ChildModeToggle } from '@/components/ChildModeToggle';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
@@ -52,6 +53,7 @@ function App() {
   const [soundEnabled] = useKV<boolean>('fx-sound', true);
   const [animEnabled] = useKV<boolean>('fx-anim', true);
   const [onboardViewed, setOnboardViewed] = useKV<boolean>('onboard-viewed', false);
+  const [childMode] = useKV<boolean>('child-mode', true);
 
   const gameTimeoutRef = useRef<number | null>(null);
 
@@ -244,30 +246,60 @@ function App() {
     };
   }, []);
 
+  // Auto-detect browser language on first visit (if onboard not viewed and default en)
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('kv-language');
+      if (!stored && !onboardViewed) {
+        const navLang = (navigator.language || 'en').slice(0,2) as Language;
+        const supported: Language[] = ['en','ru','ar','zh'];
+        if (supported.includes(navLang) && navLang !== currentLanguage) {
+          setLanguage(navLang);
+        }
+      }
+    } catch {}
+  }, [onboardViewed, currentLanguage, setLanguage]);
+
   return (
-    <div className="min-h-screen arena-bg py-10 px-4 relative" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+    <div className={"min-h-screen arena-bg py-10 px-4 relative " + (childMode ? 'child-mode' : '')} dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+      {childMode && <div className="fun-bg-overlay" aria-hidden></div>}
       <FloatingMatches />
       <div className="max-w-6xl mx-auto space-y-8 relative">
         <OnboardingOverlay
           language={currentLanguage}
           visible={!onboardViewed}
           onClose={() => setOnboardViewed(true)}
+          onLanguageChange={setLanguage}
+          childMode={childMode}
         />
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 120, damping: 18 }}
           className="text-center"
         >
-          <div className="flex justify-end mb-4">
-            <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={setLanguage} />
+          <div className="flex justify-end mb-4 gap-3 items-center">
+            <ChildModeToggle language={currentLanguage} />
+            <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={setLanguage} childMode={childMode} />
           </div>
-          <h1 className="text-5xl font-bold tracking-tight mb-2" style={{ letterSpacing: '-0.02em' }}>
-            {t(currentLanguage, 'title')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t(currentLanguage, 'subtitle')}
-          </p>
-          <div className="mt-3 flex justify-center">
+          {childMode ? (
+            <div className="child-banner mx-auto">
+              <span className="mascot" aria-hidden>🪵</span>
+              <h1>{t(currentLanguage, 'title')}</h1>
+            </div>
+          ) : (
+            <h1
+              className="text-5xl font-bold tracking-tight mb-2 text-white drop-shadow-md"
+              style={{ letterSpacing: '-0.02em' }}
+            >
+              {t(currentLanguage, 'title')}
+            </h1>
+          )}
+          <div className="mt-3 flex flex-col items-center gap-3">
+            <p className={childMode ? 'tagline typewriter' : 'text-muted-foreground'} data-animate={childMode ? 'true' : 'false'}>
+              {t(currentLanguage, 'subtitle')}
+              {childMode && <span className="typewriter-caret" aria-hidden></span>}
+            </p>
             <Badge variant="secondary" className="balance-chip px-3 py-1 flex items-center gap-2">
               <span className="text-lg">🪵</span>
               <span>{t(currentLanguage, 'balance')}:</span>

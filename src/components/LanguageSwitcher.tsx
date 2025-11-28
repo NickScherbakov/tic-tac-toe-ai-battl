@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 interface LanguageSwitcherProps {
   currentLanguage: Language;
   onLanguageChange: (lang: Language) => void;
+  childMode?: boolean;
 }
 
 const languages: { code: Language; name: string; nativeName: string }[] = [
@@ -15,9 +16,11 @@ const languages: { code: Language; name: string; nativeName: string }[] = [
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
 ];
 
-export function LanguageSwitcher({ currentLanguage, onLanguageChange }: LanguageSwitcherProps) {
+const FLAG: Record<Language,string> = { en: '🇬🇧', ru: '🇷🇺', ar: '🇸🇦', zh: '🇨🇳' };
+
+export function LanguageSwitcher({ currentLanguage, onLanguageChange, childMode }: LanguageSwitcherProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn('flex items-center gap-2 lang-wrapper', childMode && 'child-mode')}>      
       <Globe size={16} weight="bold" className="text-muted-foreground" />
       <RadioGroup
         value={currentLanguage}
@@ -28,13 +31,17 @@ export function LanguageSwitcher({ currentLanguage, onLanguageChange }: Language
           const id = `lang-${lang.code}`;
           const selected = currentLanguage === lang.code;
           return (
-            <div key={lang.code} className={cn(
-              'flex items-center gap-2 rounded-md border px-2 py-1 transition-colors cursor-pointer',
-              selected ? 'bg-accent text-accent-foreground border-accent' : 'bg-background'
-            )}>
-              <RadioGroupItem value={lang.code} id={id} />
-              <label htmlFor={id} className="text-sm leading-none cursor-pointer">
-                {lang.nativeName}
+            <div
+              key={lang.code}
+              className={cn(childMode ? 'lang-pill' : 'flex items-center gap-2 rounded-md border px-2 py-1 transition-colors cursor-pointer',
+                !childMode && (selected ? 'bg-accent text-accent-foreground border-accent' : 'bg-background')
+              )}
+              data-selected={childMode ? selected : undefined}
+              onClick={() => onLanguageChange(lang.code)}
+            >
+              <RadioGroupItem value={lang.code} id={id} className={childMode ? 'hidden' : ''} />
+              {childMode && <span className="lang-flag" aria-hidden>{FLAG[lang.code]}</span>}
+              <label htmlFor={id} className={cn('leading-none cursor-pointer', childMode ? 'text-xs font-semibold' : 'text-sm')}>                {childMode ? lang.name : lang.nativeName}
               </label>
             </div>
           );
