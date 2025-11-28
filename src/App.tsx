@@ -91,11 +91,10 @@ function App() {
       return;
     }
 
+    // Create bet with proper player marker
+    // For draw bets, we use a special marker 'D' that we'll handle separately
     const bet = createBet(player === 'draw' ? 'X' : player, amount, betOdds);
-    if (player === 'draw') {
-      // Special handling for draw bets - we'll check this separately
-      (bet as any).isDraw = true;
-    }
+    (bet as any).betType = player; // Store original bet type: 'X', 'O', or 'draw'
     
     setCurrentBet(bet);
     setBalance(currentBalance - amount);
@@ -132,14 +131,18 @@ function App() {
 
       // Process betting result
       if (currentBet) {
-        const isDraw = (currentBet as any).isDraw;
+        const betType = (currentBet as any).betType as Player | 'draw';
         let payout = 0;
         
-        if (isDraw && result.winner === 'draw') {
-          // Draw bet won
-          payout = calculatePayout({ ...currentBet, player: 'X' }, 'draw');
-          payout = Math.round(currentBet.amount * odds.drawOdds);
-        } else if (!isDraw) {
+        if (betType === 'draw') {
+          // Bet on draw
+          if (result.winner === 'draw') {
+            // Draw bet won
+            payout = Math.round(currentBet.amount * odds.drawOdds);
+          }
+          // else payout stays 0 (lost)
+        } else {
+          // Bet on X or O
           payout = calculatePayout(currentBet, result.winner);
         }
         
@@ -149,6 +152,8 @@ function App() {
           winner: result.winner,
           profit,
         };
+        // Store bet type for history display
+        (betResult as any).betType = betType;
         
         setBetResults([...currentBetResults, betResult]);
         setBalance(currentBalance + payout);

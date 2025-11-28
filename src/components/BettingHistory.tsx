@@ -23,8 +23,20 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
   };
 
   const getResultIcon = (result: BetResult) => {
+    const betType = (result as any).betType as 'X' | 'O' | 'draw' | undefined;
+    
+    if (betType === 'draw') {
+      // Bet was on draw
+      if (result.winner === 'draw') {
+        return <CheckCircle size={20} weight="fill" className="text-green-500" />;
+      } else {
+        return <XCircle size={20} weight="fill" className="text-red-500" />;
+      }
+    }
+    
+    // Bet was on X or O
     if (result.winner === 'draw') {
-      return <MinusCircle size={20} weight="fill" className="text-yellow-500" />;
+      return <MinusCircle size={20} weight="fill" className="text-red-500" />;
     }
     if (result.winner === result.player) {
       return <CheckCircle size={20} weight="fill" className="text-green-500" />;
@@ -33,15 +45,32 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
   };
 
   const getResultText = (result: BetResult) => {
-    if (result.winner === 'draw') return 'Ничья';
+    const betType = (result as any).betType as 'X' | 'O' | 'draw' | undefined;
+    
+    if (betType === 'draw') {
+      return result.winner === 'draw' ? 'Выигрыш' : 'Проигрыш';
+    }
+    
+    if (result.winner === 'draw') return 'Проигрыш';
     if (result.winner === result.player) return 'Выигрыш';
     return 'Проигрыш';
   };
 
   const getResultColor = (result: BetResult) => {
-    if (result.winner === 'draw') return 'text-yellow-600';
+    const betType = (result as any).betType as 'X' | 'O' | 'draw' | undefined;
+    
+    if (betType === 'draw') {
+      return result.winner === 'draw' ? 'text-green-600' : 'text-red-600';
+    }
+    
+    if (result.winner === 'draw') return 'text-red-600';
     if (result.winner === result.player) return 'text-green-600';
     return 'text-red-600';
+  };
+
+  const getBetLabel = (result: BetResult) => {
+    const betType = (result as any).betType as 'X' | 'O' | 'draw' | undefined;
+    return betType === 'draw' ? 'Ничья' : result.player;
   };
 
   return (
@@ -80,7 +109,7 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
                     <div className="flex items-center gap-2">
                       {getResultIcon(result)}
                       <Badge variant="outline" className="text-lg font-bold">
-                        {result.player}
+                        {getBetLabel(result)}
                       </Badge>
                       <span className={`text-sm font-semibold ${getResultColor(result)}`}>
                         {getResultText(result)}
@@ -120,13 +149,25 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
           <div className="text-center">
             <div className="text-xs text-muted-foreground">Выигрышей</div>
             <div className="text-lg font-bold text-green-600">
-              {results.filter((r) => r.winner === r.player).length}
+              {results.filter((r) => {
+                const betType = (r as any).betType;
+                if (betType === 'draw') {
+                  return r.winner === 'draw';
+                }
+                return r.winner === r.player;
+              }).length}
             </div>
           </div>
           <div className="text-center">
             <div className="text-xs text-muted-foreground">Проигрышей</div>
             <div className="text-lg font-bold text-red-600">
-              {results.filter((r) => r.winner !== r.player && r.winner !== 'draw').length}
+              {results.filter((r) => {
+                const betType = (r as any).betType;
+                if (betType === 'draw') {
+                  return r.winner !== 'draw';
+                }
+                return r.winner !== r.player && r.winner !== 'draw';
+              }).length}
             </div>
           </div>
         </div>
