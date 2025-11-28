@@ -20,7 +20,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
-import { playMoveSound, playWinSound, playBetSound, playEarnSound } from '@/lib/sound';
+import { playMoveSound, playWinSound, playBetSound, playEarnSound, unlockAudio } from '@/lib/sound';
 import { Language, t } from '@/lib/i18n';
 import { toast } from 'sonner';
 
@@ -68,6 +68,7 @@ function App() {
 
   const handleStartGame = () => {
     if (status === 'playing') return;
+    unlockAudio();
     
     // Check if there's a bet
     if (!currentBet) {
@@ -98,6 +99,7 @@ function App() {
   };
 
   const handlePlaceBet = (player: Player | 'draw', amount: number, betOdds: number) => {
+    unlockAudio();
     if (amount > currentBalance) {
       toast.error(t(currentLanguage, 'toasts.insufficientMatches'));
       return;
@@ -119,6 +121,7 @@ function App() {
   };
 
   const handleEarnMatches = () => {
+    unlockAudio();
     const EARN_AMOUNT = 50;
     setBalance(currentBalance + EARN_AMOUNT);
     toast.success(t(currentLanguage, 'toasts.matchesEarned', { amount: EARN_AMOUNT.toString() }));
