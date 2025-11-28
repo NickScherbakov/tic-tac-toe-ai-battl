@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Player } from '@/lib/game';
 import { Badge } from '@/components/ui/badge';
 import { AIStrategy } from '@/lib/ai';
+import { Language, t } from '@/lib/i18n';
 
 interface PlayerInfoProps {
   player: Player;
@@ -10,9 +11,10 @@ interface PlayerInfoProps {
   strategyName: string;
   isActive: boolean;
   isThinking?: boolean;
+  language: Language;
 }
 
-export function PlayerInfo({ player, strategy, strategyName, isActive, isThinking }: PlayerInfoProps) {
+export function PlayerInfo({ player, strategy, strategyName, isActive, isThinking, language }: PlayerInfoProps) {
   const playerColor = player === 'X' ? 'var(--color-player-x)' : 'var(--color-player-o)';
 
   return (

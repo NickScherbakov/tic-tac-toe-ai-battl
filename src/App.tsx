@@ -13,9 +13,11 @@ import { SpeedControl, GameSpeed, getSpeedDelay } from '@/components/SpeedContro
 import { StrategySelect } from '@/components/StrategySelect';
 import { BettingPanel } from '@/components/BettingPanel';
 import { BettingHistory } from '@/components/BettingHistory';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
+import { Language, t } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 function App() {
@@ -41,6 +43,7 @@ function App() {
   const [balance, setBalance] = useKV<number>('balance', 100);
   const [currentBet, setCurrentBet] = useState<Bet | null>(null);
   const [betResults, setBetResults] = useKV<BetResult[]>('bet-results', []);
+  const [language, setLanguage] = useKV<Language>('language', 'en');
 
   const gameTimeoutRef = useRef<number | null>(null);
 
@@ -50,6 +53,7 @@ function App() {
   const currentSpeed = speed ?? 'normal';
   const currentBalance = balance ?? 100;
   const currentBetResults = betResults ?? [];
+  const currentLanguage = language ?? 'en';
 
   // Calculate odds based on current strategies
   const odds = calculateOdds(currentXStrategy, currentOStrategy);
@@ -59,7 +63,7 @@ function App() {
     
     // Check if there's a bet
     if (!currentBet) {
-      toast.error('Сделайте ставку перед началом игры!');
+      toast.error(t(currentLanguage, 'toasts.placeBetFirst'));
       return;
     }
     
@@ -87,7 +91,7 @@ function App() {
 
   const handlePlaceBet = (player: Player | 'draw', amount: number, betOdds: number) => {
     if (amount > currentBalance) {
-      toast.error('Недостаточно спичек!');
+      toast.error(t(currentLanguage, 'toasts.insufficientMatches'));
       return;
     }
 
@@ -98,7 +102,10 @@ function App() {
     
     setCurrentBet(bet);
     setBalance(currentBalance - amount);
-    toast.success(`Ставка ${amount} спичек на ${player === 'draw' ? 'ничью' : `игрока ${player}`} принята!`);
+    const message = player === 'draw'
+      ? t(currentLanguage, 'toasts.betAcceptedDraw', { amount: amount.toString() })
+      : t(currentLanguage, 'toasts.betAccepted', { amount: amount.toString(), player });
+    toast.success(message);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -162,22 +169,23 @@ function App() {
         setBalance(currentBalance + payout);
         
         if (profit > 0) {
-          toast.success(`🎉 Вы выиграли ${profit} спичек!`, {
+          toast.success(t(currentLanguage, 'toasts.youWon', { amount: profit.toString() }), {
             duration: 5000,
           });
         } else if (profit < 0) {
-          toast.error(`😞 Вы проиграли ${-profit} спичек`, {
+          toast.error(t(currentLanguage, 'toasts.youLost', { amount: (-profit).toString() }), {
             duration: 5000,
           });
         } else {
-          toast.info(`Ставка возвращена: 0 спичек`);
+          toast.info(t(currentLanguage, 'toasts.betReturned'));
         }
       }
 
+      const strategyName = t(currentLanguage, `strategies.${strategy}` as any);
       const resultMessage = 
         result.winner === 'draw' 
-          ? 'Game ended in a draw!'
-          : `Player ${result.winner} wins with ${AI_STRATEGIES[strategy].name}!`;
+          ? t(currentLanguage, 'toasts.gameEndedDraw')
+          : t(currentLanguage, 'toasts.playerWinsWith', { player: result.winner, strategy: strategyName });
       
       toast.success(resultMessage);
     } else {
@@ -213,18 +221,21 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-6xl mx-auto space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
+          <div className="flex justify-end mb-4">
+            <LanguageSwitcher currentLanguage={currentLanguage} onLanguageChange={setLanguage} />
+          </div>
           <h1 className="text-5xl font-bold tracking-tight mb-2" style={{ letterSpacing: '-0.02em' }}>
-            AI vs AI Tic-Tac-Toe
+            {t(currentLanguage, 'title')}
           </h1>
           <p className="text-muted-foreground">
-            Watch two AI strategies battle it out
+            {t(currentLanguage, 'subtitle')}
           </p>
         </motion.div>
 
@@ -236,22 +247,24 @@ function App() {
             className="space-y-6"
           >
             <Card className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold mb-4">Players</h2>
+              <h2 className="text-xl font-semibold mb-4">{t(currentLanguage, 'players')}</h2>
               
               <PlayerInfo
                 player="X"
                 strategy={currentXStrategy}
-                strategyName={AI_STRATEGIES[currentXStrategy].name}
+                strategyName={t(currentLanguage, `strategies.${currentXStrategy}` as any)}
                 isActive={status === 'playing' && currentPlayer === 'X'}
                 isThinking={status === 'playing' && currentPlayer === 'X' && isThinking}
+                language={currentLanguage}
               />
               
               <PlayerInfo
                 player="O"
                 strategy={currentOStrategy}
-                strategyName={AI_STRATEGIES[currentOStrategy].name}
+                strategyName={t(currentLanguage, `strategies.${currentOStrategy}` as any)}
                 isActive={status === 'playing' && currentPlayer === 'O'}
                 isThinking={status === 'playing' && currentPlayer === 'O' && isThinking}
+                language={currentLanguage}
               />
 
               <Separator />
@@ -261,6 +274,7 @@ function App() {
                 strategy={currentXStrategy}
                 onStrategyChange={setXStrategy}
                 disabled={status === 'playing'}
+                language={currentLanguage}
               />
 
               <StrategySelect
@@ -268,6 +282,7 @@ function App() {
                 strategy={currentOStrategy}
                 onStrategyChange={setOStrategy}
                 disabled={status === 'playing'}
+                language={currentLanguage}
               />
             </Card>
 
@@ -278,6 +293,7 @@ function App() {
               drawOdds={odds.drawOdds}
               onPlaceBet={handlePlaceBet}
               disabled={status === 'playing' || !!currentBet}
+              language={currentLanguage}
             />
           </motion.div>
 
@@ -287,7 +303,7 @@ function App() {
             transition={{ delay: 0.2 }}
           >
             <Card className="p-6 space-y-6">
-              <h2 className="text-xl font-semibold">Game Board</h2>
+              <h2 className="text-xl font-semibold">{t(currentLanguage, 'gameBoard')}</h2>
               
               <GameBoard
                 board={board}
@@ -305,8 +321,8 @@ function App() {
                     <Alert>
                       <AlertDescription className="text-center text-lg font-semibold">
                         {winner === 'draw' 
-                          ? '🤝 Draw! Both AIs played well.' 
-                          : `🎉 Player ${winner} wins!`
+                          ? t(currentLanguage, 'drawResult')
+                          : t(currentLanguage, 'playerWins', { player: winner })
                         }
                       </AlertDescription>
                     </Alert>
@@ -322,7 +338,7 @@ function App() {
                   size="lg"
                 >
                   <CaretRight weight="fill" />
-                  {status === 'idle' ? 'Start Game' : 'Playing...'}
+                  {status === 'idle' ? t(currentLanguage, 'startGame') : t(currentLanguage, 'playing')}
                 </Button>
                 
                 <Button
@@ -332,7 +348,7 @@ function App() {
                   size="lg"
                 >
                   <ArrowClockwise />
-                  New Game
+                  {t(currentLanguage, 'newGame')}
                 </Button>
               </div>
             </Card>
@@ -345,12 +361,13 @@ function App() {
           transition={{ delay: 0.3 }}
         >
           <Card className="p-6 space-y-4">
-            <h2 className="text-xl font-semibold">Controls</h2>
+            <h2 className="text-xl font-semibold">{t(currentLanguage, 'controls')}</h2>
             
             <SpeedControl
               speed={currentSpeed}
               onSpeedChange={setSpeed}
               disabled={status === 'playing'}
+              language={currentLanguage}
             />
           </Card>
         </motion.div>
@@ -362,13 +379,14 @@ function App() {
         >
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Statistics</h2>
-              <StatsDisplay stats={currentStats} />
+              <h2 className="text-xl font-semibold mb-4">{t(currentLanguage, 'statistics')}</h2>
+              <StatsDisplay stats={currentStats} language={currentLanguage} />
             </Card>
             
             <BettingHistory
               results={currentBetResults}
               netProfit={currentBetResults.reduce((sum, r) => sum + (r.profit - r.amount), 0)}
+              language={currentLanguage}
             />
           </div>
         </motion.div>

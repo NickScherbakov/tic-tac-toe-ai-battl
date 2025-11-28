@@ -1,4 +1,5 @@
 import { AIStrategy } from '@/lib/ai';
+import { Language, t } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/select';
 
 interface StrategySelectProps {
+    language: Language;
   player: 'X' | 'O';
   strategy: AIStrategy;
   onStrategyChange: (strategy: AIStrategy) => void;
@@ -22,11 +24,11 @@ const STRATEGIES: { value: AIStrategy; label: string; description: string }[] = 
   { value: 'minimax', label: 'Perfect (Minimax)', description: 'Optimal strategy' },
 ];
 
-export function StrategySelect({ player, strategy, onStrategyChange, disabled }: StrategySelectProps) {
+export function StrategySelect({ player, strategy, onStrategyChange, disabled, language }: StrategySelectProps) {
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-muted-foreground">
-        Player {player} Strategy
+        {t(language, 'strategy')} {player}
       </label>
       <Select value={strategy} onValueChange={onStrategyChange} disabled={disabled}>
         <SelectTrigger className="w-full">
@@ -36,7 +38,7 @@ export function StrategySelect({ player, strategy, onStrategyChange, disabled }:
           {STRATEGIES.map((strat) => (
             <SelectItem key={strat.value} value={strat.value}>
               <div className="flex flex-col">
-                <span className="font-medium">{strat.label}</span>
+                <span className="font-medium">{t(language, `strategies.${strat.value}` as any)}</span>
                 <span className="text-xs text-muted-foreground">{strat.description}</span>
               </div>
             </SelectItem>

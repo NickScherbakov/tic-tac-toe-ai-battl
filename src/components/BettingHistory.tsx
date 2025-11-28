@@ -3,14 +3,16 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle, XCircle, MinusCircle, ChartLineUp, ChartLineDown } from '@phosphor-icons/react';
+import { Language, t } from '@/lib/i18n';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BettingHistoryProps {
   results: BetResult[];
   netProfit: number;
+  language: Language;
 }
 
-export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
+export function BettingHistory({ results, netProfit, language }: BettingHistoryProps) {
   const recentResults = results.slice(-10).reverse();
 
   const formatDate = (timestamp: number) => {
@@ -76,7 +78,7 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">История ставок</h2>
+        <h2 className="text-xl font-semibold">{t(language, 'bettingHistory')}</h2>
         <div className="flex items-center gap-2">
           {netProfit >= 0 ? (
             <ChartLineUp size={20} weight="bold" className="text-green-500" />
@@ -92,7 +94,7 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
       <ScrollArea className="h-[300px] pr-4">
         {recentResults.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            Ставок пока нет. Сделайте первую ставку!
+            {t(language, 'noBets')}
           </div>
         ) : (
           <div className="space-y-2">
@@ -143,11 +145,11 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
       {results.length > 0 && (
         <div className="grid grid-cols-3 gap-3 pt-2 border-t">
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Всего ставок</div>
+            <div className="text-xs text-muted-foreground">{t(language, 'totalBets')}</div>
             <div className="text-lg font-bold">{results.length}</div>
           </div>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Выигрышей</div>
+            <div className="text-xs text-muted-foreground">{t(language, 'wins')}</div>
             <div className="text-lg font-bold text-green-600">
               {results.filter((r) => {
                 const betType = (r as any).betType;
@@ -159,7 +161,7 @@ export function BettingHistory({ results, netProfit }: BettingHistoryProps) {
             </div>
           </div>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Проигрышей</div>
+            <div className="text-xs text-muted-foreground">{t(language, 'losses')}</div>
             <div className="text-lg font-bold text-red-600">
               {results.filter((r) => {
                 const betType = (r as any).betType;
