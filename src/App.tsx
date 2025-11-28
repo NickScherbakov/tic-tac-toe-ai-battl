@@ -15,6 +15,7 @@ import { StrategySelect } from '@/components/StrategySelect';
 import { BettingPanel } from '@/components/BettingPanel';
 import { BettingHistory } from '@/components/BettingHistory';
 import { FloatingMatches } from '@/components/FloatingMatches';
+import { OnboardingOverlay } from '@/components/OnboardingOverlay';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
@@ -50,6 +51,7 @@ function App() {
   const [language, setLanguage] = useKV<Language>('language', 'en');
   const [soundEnabled] = useKV<boolean>('fx-sound', true);
   const [animEnabled] = useKV<boolean>('fx-anim', true);
+  const [onboardViewed, setOnboardViewed] = useKV<boolean>('onboard-viewed', false);
 
   const gameTimeoutRef = useRef<number | null>(null);
 
@@ -243,6 +245,11 @@ function App() {
     <div className="min-h-screen arena-bg py-10 px-4 relative" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <FloatingMatches />
       <div className="max-w-6xl mx-auto space-y-8 relative">
+        <OnboardingOverlay
+          language={currentLanguage}
+          visible={!onboardViewed}
+          onClose={() => setOnboardViewed(true)}
+        />
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

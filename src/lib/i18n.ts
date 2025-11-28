@@ -80,6 +80,15 @@ export interface Translations {
     cancel: string;
     submit: string;
   };
+
+  // Onboarding
+  onboarding: {
+    title: string;
+    stepBet: string;
+    stepStart: string;
+    stepObserve: string;
+    close: string;
+  };
   
   // Toasts
   toasts: {
@@ -167,6 +176,14 @@ export const translations: Record<Language, Translations> = {
       cancel: 'Cancel',
       submit: 'Check Answer',
     },
+
+    onboarding: {
+      title: 'Welcome to the AI Arena',
+      stepBet: '1. Place a bet using the Betting panel.',
+      stepStart: '2. Press Start Game to let AIs fight.',
+      stepObserve: '3. Watch strategies & collect matches.',
+      close: 'Got it!',
+    },
     
     toasts: {
       placeBetFirst: 'Place a bet before starting the game!',
@@ -251,6 +268,14 @@ export const translations: Record<Language, Translations> = {
       reward: 'Правильный ответ = 50 спичек',
       cancel: 'Отмена',
       submit: 'Проверить',
+    },
+
+    onboarding: {
+      title: 'Добро пожаловать на арену ИИ',
+      stepBet: '1. Сделайте ставку в панели тотализатора.',
+      stepStart: '2. Нажмите «Начать игру».',
+      stepObserve: '3. Наблюдайте за стратегиями и копите спички.',
+      close: 'Понятно!',
     },
     
     toasts: {
@@ -337,6 +362,14 @@ export const translations: Record<Language, Translations> = {
       cancel: 'إلغاء',
       submit: 'تحقق من الإجابة',
     },
+
+    onboarding: {
+      title: 'مرحبًا بك في ساحة الذكاء الاصطناعي',
+      stepBet: '1. ضع رهانًا من لوحة الرهان.',
+      stepStart: '2. اضغط بدء اللعبة.',
+      stepObserve: '3. شاهد الاستراتيجيات واجمع الأعواد.',
+      close: 'حسنا!',
+    },
     
     toasts: {
       placeBetFirst: 'ضع رهانًا قبل بدء اللعبة!',
@@ -421,6 +454,14 @@ export const translations: Record<Language, Translations> = {
       reward: '正确答案 = 50根火柴',
       cancel: '取消',
       submit: '检查答案',
+    },
+
+    onboarding: {
+      title: '欢迎来到 AI 竞技场',
+      stepBet: '1. 在投注面板下注。',
+      stepStart: '2. 点击开始游戏。',
+      stepObserve: '3. 观看策略对决并赚取火柴。',
+      close: '知道了!',
     },
     
     toasts: {
