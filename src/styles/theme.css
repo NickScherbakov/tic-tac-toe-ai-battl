@@ -87,16 +87,30 @@
 }
 @layer components {
   /* Glass card and chip styles */
-  .arena-bg { background: var(--arena-gradient), var(--color-bg); }
+  .arena-bg { background: var(--arena-gradient), var(--color-bg); background-attachment: fixed; }
   .glass-card { background-color: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(var(--glass-blur)); }
   .balance-chip { background-color: var(--chip-bg); border: 1px solid var(--chip-border); color: var(--chip-text); }
   .neon-x { color: var(--neon-x); }
   .neon-o { color: var(--neon-o); }
   .neon-draw { color: var(--neon-draw); }
+  .glow-x { text-shadow: 0 0 8px var(--neon-x), 0 0 16px var(--neon-x); }
+  .glow-o { text-shadow: 0 0 8px var(--neon-o), 0 0 16px var(--neon-o); }
 }
 
 @layer base {
-  #spark-app {
+  :root {
+    /* Game arena theme tokens */
+    --arena-bg: #0f172a;
+    --arena-gradient: radial-gradient(1200px 600px at 50% -10%, rgba(56,189,248,0.10), transparent 70%), radial-gradient(900px 500px at 120% 120%, rgba(168,85,247,0.10), transparent 70%);
+    --glass-bg: rgba(30,41,59,0.55);
+    --glass-border: rgba(148,163,184,0.25);
+    --glass-blur: 18px;
+    --neon-x: #06b6d4;
+    --neon-o: #d946ef;
+    --neon-draw: #f59e0b;
+    --chip-bg: rgba(2,6,23,0.65);
+    --chip-border: rgba(148,163,184,0.35);
+    --chip-text: #e2e8f0;
     --tomato-contrast: #fff;
     --red-contrast: #fff;
     --ruby-contrast: #fff;
@@ -247,9 +261,9 @@
     --color-fg-secondary: var(--color-neutral-a11);
 
     /* Background colors */
-    --color-bg: #ffffff;
-    --color-bg-inset: var(--color-neutral-2);
-    --color-bg-overlay: #ffffff;
+    --color-bg: var(--arena-bg);
+    --color-bg-inset: #0b1220;
+    --color-bg-overlay: var(--glass-bg);
 
     /* Focus ring */
     --color-focus-ring: var(--color-accent-9);
@@ -263,9 +277,11 @@
     --font-family: var(--font-sans-serif);
   }
 
-  #spark-app.dark-theme {
-    --color-bg: var(--color-neutral-1);
+  .dark-theme {
+    --color-bg: var(--arena-bg);
     --color-bg-inset: #000000;
-    --color-bg-overlay: var(--color-neutral-3);
+    --color-bg-overlay: var(--glass-bg);
+    --color-accent-9: var(--neon-x);
+    --color-accent-secondary-9: var(--neon-o);
   }
 }

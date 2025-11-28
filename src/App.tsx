@@ -14,6 +14,7 @@ import { SpeedControl, GameSpeed, getSpeedDelay } from '@/components/SpeedContro
 import { StrategySelect } from '@/components/StrategySelect';
 import { BettingPanel } from '@/components/BettingPanel';
 import { BettingHistory } from '@/components/BettingHistory';
+import { FloatingMatches } from '@/components/FloatingMatches';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
@@ -232,8 +233,9 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen arena-bg py-10 px-4" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen arena-bg py-10 px-4 relative" dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
+      <FloatingMatches />
+      <div className="max-w-6xl mx-auto space-y-8 relative">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
