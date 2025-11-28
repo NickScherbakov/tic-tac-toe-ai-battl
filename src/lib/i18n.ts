@@ -68,6 +68,19 @@ export interface Translations {
   oWins: string;
   draws: string;
   
+  // Earn Matches Mini-Game
+  earnMatches: {
+    title: string;
+    description: string;
+    question: string;
+    yourAnswer: string;
+    wrongAnswer: string;
+    newTask: string;
+    reward: string;
+    cancel: string;
+    submit: string;
+  };
+  
   // Toasts
   toasts: {
     placeBetFirst: string;
@@ -79,6 +92,7 @@ export interface Translations {
     betReturned: string;
     gameEndedDraw: string;
     playerWinsWith: string;
+    matchesEarned: string;
   };
 }
 
@@ -142,6 +156,18 @@ export const translations: Record<Language, Translations> = {
     oWins: 'O Wins',
     draws: 'Draws',
     
+    earnMatches: {
+      title: 'Earn Matches',
+      description: 'Solve a math problem to earn 50 matches!',
+      question: 'Solve the problem:',
+      yourAnswer: 'Your answer',
+      wrongAnswer: '❌ Wrong answer, try again!',
+      newTask: 'New problem generated.',
+      reward: 'Correct answer = 50 matches',
+      cancel: 'Cancel',
+      submit: 'Check Answer',
+    },
+    
     toasts: {
       placeBetFirst: 'Place a bet before starting the game!',
       insufficientMatches: 'Insufficient matches!',
@@ -152,6 +178,7 @@ export const translations: Record<Language, Translations> = {
       betReturned: 'Bet returned: 0 matches',
       gameEndedDraw: 'Game ended in a draw!',
       playerWinsWith: 'Player {player} wins with {strategy}!',
+      matchesEarned: '🎉 Great job! You earned {amount} matches!',
     },
   },
   
@@ -214,6 +241,18 @@ export const translations: Record<Language, Translations> = {
     oWins: 'Побед O',
     draws: 'Ничьих',
     
+    earnMatches: {
+      title: 'Заработать спички',
+      description: 'Реши математическую задачу и получи 50 спичек!',
+      question: 'Реши задачу:',
+      yourAnswer: 'Твой ответ',
+      wrongAnswer: '❌ Неправильно, попробуй ещё!',
+      newTask: 'Новая задача.',
+      reward: 'Правильный ответ = 50 спичек',
+      cancel: 'Отмена',
+      submit: 'Проверить',
+    },
+    
     toasts: {
       placeBetFirst: 'Сделайте ставку перед началом игры!',
       insufficientMatches: 'Недостаточно спичек!',
@@ -224,6 +263,7 @@ export const translations: Record<Language, Translations> = {
       betReturned: 'Ставка возвращена: 0 спичек',
       gameEndedDraw: 'Игра закончилась вничью!',
       playerWinsWith: 'Игрок {player} победил со стратегией {strategy}!',
+      matchesEarned: '🎉 Отлично! Ты заработал {amount} спичек!',
     },
   },
   
@@ -286,6 +326,18 @@ export const translations: Record<Language, Translations> = {
     oWins: 'انتصارات O',
     draws: 'التعادلات',
     
+    earnMatches: {
+      title: 'اكسب أعوادًا',
+      description: 'حل مسألة رياضية واحصل على 50 عودًا!',
+      question: 'حل المسألة:',
+      yourAnswer: 'إجابتك',
+      wrongAnswer: '❌ إجابة خاطئة، حاول مرة أخرى!',
+      newTask: 'مسألة جديدة.',
+      reward: 'إجابة صحيحة = 50 عودًا',
+      cancel: 'إلغاء',
+      submit: 'تحقق من الإجابة',
+    },
+    
     toasts: {
       placeBetFirst: 'ضع رهانًا قبل بدء اللعبة!',
       insufficientMatches: 'أعواد غير كافية!',
@@ -296,6 +348,7 @@ export const translations: Record<Language, Translations> = {
       betReturned: 'إرجاع الرهان: 0 أعواد',
       gameEndedDraw: 'انتهت اللعبة بالتعادل!',
       playerWinsWith: 'اللاعب {player} يفوز باستراتيجية {strategy}!',
+      matchesEarned: '🎉 أحسنت! لقد كسبت {amount} عودًا!',
     },
   },
   
@@ -358,6 +411,18 @@ export const translations: Record<Language, Translations> = {
     oWins: 'O获胜',
     draws: '平局',
     
+    earnMatches: {
+      title: '赚取火柴',
+      description: '解决数学题赚取50根火柴！',
+      question: '解决问题：',
+      yourAnswer: '你的答案',
+      wrongAnswer: '❌ 错误答案，再试一次！',
+      newTask: '新问题。',
+      reward: '正确答案 = 50根火柴',
+      cancel: '取消',
+      submit: '检查答案',
+    },
+    
     toasts: {
       placeBetFirst: '开始游戏前请先下注！',
       insufficientMatches: '火柴不足！',
@@ -368,6 +433,7 @@ export const translations: Record<Language, Translations> = {
       betReturned: '投注返还：0根火柴',
       gameEndedDraw: '游戏以平局结束！',
       playerWinsWith: '玩家{player}使用{strategy}策略获胜！',
+      matchesEarned: '🎉 做得好！你赚了{amount}根火柴！',
     },
   },
 };

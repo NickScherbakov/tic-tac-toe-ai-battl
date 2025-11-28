@@ -6,16 +6,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ChartLine } from '@phosphor-icons/react';
+import { ChartLine, Lightbulb } from '@phosphor-icons/react';
 import { motion } from 'framer-motion';
 import { Language, t } from '@/lib/i18n';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { EarnMatchesDialog } from './EarnMatchesDialog';
+
 interface BettingPanelProps {
   balance: number;
   xOdds: number;
   oOdds: number;
   drawOdds: number;
   onPlaceBet: (player: Player | 'draw', amount: number, odds: number) => void;
+  onEarnMatches: () => void;
   disabled: boolean;
   language: Language;
 }
@@ -26,11 +29,13 @@ export function BettingPanel({
   oOdds,
   drawOdds,
   onPlaceBet,
+  onEarnMatches,
   disabled,
   language,
 }: BettingPanelProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | 'draw' | null>(null);
   const [betAmount, setBetAmount] = useState<string>('10');
+  const [showEarnDialog, setShowEarnDialog] = useState(false);
 
   const handlePlaceBet = () => {
     if (!selectedPlayer) return;
@@ -194,9 +199,30 @@ export function BettingPanel({
         </Button>
 
         {balance < 10 && (
-          <p className="text-sm text-center text-red-500">{t(language, 'lowBalance')}</p>
+          <>
+            <p className="text-sm text-center text-red-500">{t(language, 'lowBalance')}</p>
+            <Button
+              onClick={() => setShowEarnDialog(true)}
+              variant="outline"
+              className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950"
+              size="lg"
+            >
+              <Lightbulb className="mr-2" weight="fill" />
+              {t(language, 'earnMatches.title')}
+            </Button>
+          </>
         )}
       </div>
+      
+      <EarnMatchesDialog
+        open={showEarnDialog}
+        onOpenChange={setShowEarnDialog}
+        onSuccess={() => {
+          onEarnMatches();
+          setShowEarnDialog(false);
+        }}
+        language={language}
+      />
     </Card>
   );
 }

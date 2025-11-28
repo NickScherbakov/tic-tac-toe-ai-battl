@@ -111,6 +111,12 @@ function App() {
     toast.success(message);
   };
 
+  const handleEarnMatches = () => {
+    const EARN_AMOUNT = 50;
+    setBalance(currentBalance + EARN_AMOUNT);
+    toast.success(t(currentLanguage, 'toasts.matchesEarned', { amount: EARN_AMOUNT.toString() }));
+  };
+
   const makeAIMove = (currentBoard: Player[], player: Player) => {
     const strategy = player === 'X' ? currentXStrategy : currentOStrategy;
     const ai = AI_STRATEGIES[strategy];
@@ -305,6 +311,7 @@ function App() {
               oOdds={odds.oOdds}
               drawOdds={odds.drawOdds}
               onPlaceBet={handlePlaceBet}
+              onEarnMatches={handleEarnMatches}
               disabled={status === 'playing' || !!currentBet}
               language={currentLanguage}
             />
