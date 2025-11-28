@@ -84,7 +84,12 @@ export function BettingPanel({
               variant={selectedPlayer === 'X' ? 'default' : 'outline'}
               onClick={() => setSelectedPlayer('X')}
               disabled={disabled}
-              className="relative"
+              aria-pressed={selectedPlayer === 'X'}
+              className={
+                selectedPlayer === 'X'
+                  ? 'relative ring-2 ring-[var(--color-player-x)] bg-[var(--color-player-x)]/10'
+                  : 'relative'
+              }
             >
               <div className="flex flex-col items-center gap-1">
                 <span>{t(language, 'xPlayer')}</span>
@@ -98,7 +103,12 @@ export function BettingPanel({
               variant={selectedPlayer === 'O' ? 'default' : 'outline'}
               onClick={() => setSelectedPlayer('O')}
               disabled={disabled}
-              className="relative"
+              aria-pressed={selectedPlayer === 'O'}
+              className={
+                selectedPlayer === 'O'
+                  ? 'relative ring-2 ring-[var(--color-player-o)] bg-[var(--color-player-o)]/10'
+                  : 'relative'
+              }
             >
               <div className="flex flex-col items-center gap-1">
                 <span>{t(language, 'oPlayer')}</span>
@@ -112,7 +122,12 @@ export function BettingPanel({
               variant={selectedPlayer === 'draw' ? 'default' : 'outline'}
               onClick={() => setSelectedPlayer('draw')}
               disabled={disabled}
-              className="relative"
+              aria-pressed={selectedPlayer === 'draw'}
+              className={
+                selectedPlayer === 'draw'
+                  ? 'relative ring-2 ring-yellow-500 bg-yellow-100 dark:bg-yellow-900/30'
+                  : 'relative'
+              }
             >
               <div className="flex flex-col items-center gap-1">
                 <span>{t(language, 'draw')}</span>
