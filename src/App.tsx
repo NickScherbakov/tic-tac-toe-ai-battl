@@ -133,20 +133,23 @@ function App() {
       if (currentBet) {
         const betType = (currentBet as any).betType as Player | 'draw';
         let payout = 0;
+        let profit = 0;
         
         if (betType === 'draw') {
           // Bet on draw
           if (result.winner === 'draw') {
-            // Draw bet won
             payout = Math.round(currentBet.amount * odds.drawOdds);
+            profit = payout - currentBet.amount;
+          } else {
+            payout = 0;
+            profit = -currentBet.amount;
           }
-          // else payout stays 0 (lost)
         } else {
           // Bet on X or O
           payout = calculatePayout(currentBet, result.winner);
+          profit = payout - currentBet.amount;
         }
         
-        const profit = payout;
         const betResult: BetResult = {
           ...currentBet,
           winner: result.winner,
@@ -158,16 +161,16 @@ function App() {
         setBetResults([...currentBetResults, betResult]);
         setBalance(currentBalance + payout);
         
-        if (profit > currentBet.amount) {
-          toast.success(`🎉 Вы выиграли ${profit - currentBet.amount} спичек!`, {
+        if (profit > 0) {
+          toast.success(`🎉 Вы выиграли ${profit} спичек!`, {
             duration: 5000,
           });
-        } else if (profit === 0) {
-          toast.error(`😞 Вы проиграли ${currentBet.amount} спичек`, {
+        } else if (profit < 0) {
+          toast.error(`😞 Вы проиграли ${-profit} спичек`, {
             duration: 5000,
           });
         } else {
-          toast.info(`Ставка возвращена: ${profit} спичек`);
+          toast.info(`Ставка возвращена: 0 спичек`);
         }
       }
 
