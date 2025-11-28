@@ -43,6 +43,7 @@ function App() {
   // Betting state
   const [balance, setBalance] = useKV<number>('balance', 100);
   const [currentBet, setCurrentBet] = useState<Bet | null>(null);
+    const [balanceBeforeBet, setBalanceBeforeBet] = useState<number | null>(null);
   const [betResults, setBetResults] = useKV<BetResult[]>('bet-results', []);
   const [language, setLanguage] = useKV<Language>('language', 'en');
 
@@ -100,6 +101,7 @@ function App() {
     // For draw bets, we use a special marker 'D' that we'll handle separately
     const bet = createBet(player === 'draw' ? 'X' : player, amount, betOdds);
     (bet as any).betType = player; // Store original bet type: 'X', 'O', or 'draw'
+      setBalanceBeforeBet(currentBalance);
     
     setCurrentBet(bet);
     setBalance(currentBalance - amount);
@@ -167,7 +169,9 @@ function App() {
         (betResult as any).betType = betType;
         
         setBetResults([...currentBetResults, betResult]);
-        setBalance(currentBalance + payout);
+        const finalBalance = (balanceBeforeBet ?? currentBalance) - currentBet.amount + payout;
+        setBalance(finalBalance);
+        setBalanceBeforeBet(null);
         
         if (profit > 0) {
           toast.success(t(currentLanguage, 'toasts.youWon', { amount: profit.toString() }), {
