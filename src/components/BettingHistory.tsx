@@ -125,14 +125,14 @@ export function BettingHistory({ results, netProfit, language }: BettingHistoryP
                   <div className="flex items-center justify-between text-sm">
                     <div className="space-x-3">
                       <span className="text-muted-foreground">
-                        Ставка: <span className="font-semibold text-foreground">{result.amount}</span>
+                        {t(language, 'bet')}: <span className="font-semibold text-foreground">{result.amount} 🪵</span>
                       </span>
                       <span className="text-muted-foreground">
-                        Коэф: <span className="font-semibold text-foreground">{result.odds.toFixed(2)}</span>
+                        {t(language, 'odds')}: <span className="font-semibold text-foreground">{result.odds.toFixed(2)}</span>
                       </span>
                     </div>
                     <div className={`font-bold ${result.profit > 0 ? 'text-green-600' : result.profit < 0 ? 'text-red-600' : 'text-yellow-600'}`}>
-                      {result.profit > 0 ? '+' : ''}{result.profit}
+                      {result.profit > 0 ? '+' : ''}{result.profit} 🪵
                     </div>
                   </div>
                 </motion.div>
