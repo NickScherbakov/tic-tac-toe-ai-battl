@@ -10,12 +10,12 @@ interface GameBoardProps {
 
 export function GameBoard({ board, winningLine, lastMove }: GameBoardProps) {
   return (
-    <div className="grid grid-cols-3 gap-2 w-full max-w-[400px] mx-auto">
+    <div className="grid grid-cols-3 gap-3 w-full max-w-[420px] mx-auto">
       {board.map((cell, index) => (
         <motion.div
           key={index}
           className={cn(
-            'aspect-square bg-card border-2 rounded-lg flex items-center justify-center relative overflow-hidden',
+            'aspect-square glass-card border-2 rounded-xl flex items-center justify-center relative overflow-hidden',
             winningLine?.includes(index) ? 'border-accent' : 'border-border',
             lastMove === index && 'ring-2 ring-ring ring-offset-2 ring-offset-background'
           )}
@@ -35,6 +35,16 @@ export function GameBoard({ board, winningLine, lastMove }: GameBoardProps) {
               style={{ fontFamily: 'Space Grotesk, sans-serif' }}
             >
               {cell}
+            </motion.div>
+          )}
+          {!cell && (
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center text-2xl opacity-0"
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 0.35 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span>🪵</span>
             </motion.div>
           )}
           {winningLine?.includes(index) && (
