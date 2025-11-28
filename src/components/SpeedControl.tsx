@@ -25,7 +25,7 @@ export function getSpeedDelay(speed: GameSpeed): number {
 
 export function SpeedControl({ speed, onSpeedChange, disabled, language }: SpeedControlProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 glass-card p-3 rounded-lg">
       <label className="text-sm font-medium text-muted-foreground">{t(language, 'gameSpeed')}</label>
       <div className="flex gap-2 flex-wrap">
         {SPEED_OPTIONS.map((option) => (
@@ -35,7 +35,7 @@ export function SpeedControl({ speed, onSpeedChange, disabled, language }: Speed
             size="sm"
             onClick={() => onSpeedChange(option.value)}
             disabled={disabled}
-            className={cn('flex items-center gap-2', speed === option.value && 'ring-2 ring-ring')}
+            className={cn('flex items-center gap-2', speed === option.value && 'ring-2 ring-ring balance-chip')}
           >
             {option.iconComp}
             {t(language, option.value)}

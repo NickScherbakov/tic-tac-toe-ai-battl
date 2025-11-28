@@ -26,7 +26,7 @@ const STRATEGIES: { value: AIStrategy; label: string; description: string }[] = 
 
 export function StrategySelect({ player, strategy, onStrategyChange, disabled, language }: StrategySelectProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 glass-card p-3 rounded-lg">
       <label className="text-sm font-medium text-muted-foreground">
         {t(language, 'strategy')} {player}
       </label>
