@@ -11,8 +11,11 @@ import { PlayerInfo } from '@/components/PlayerInfo';
 import { StatsDisplay } from '@/components/StatsDisplay';
 import { SpeedControl, GameSpeed, getSpeedDelay } from '@/components/SpeedControl';
 import { StrategySelect } from '@/components/StrategySelect';
+import { BettingPanel } from '@/components/BettingPanel';
+import { BettingHistory } from '@/components/BettingHistory';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
+import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
 import { toast } from 'sonner';
 
 function App() {
@@ -34,15 +37,31 @@ function App() {
   const [oStrategy, setOStrategy] = useKV<AIStrategy>('o-strategy', 'random');
   const [speed, setSpeed] = useKV<GameSpeed>('game-speed', 'normal');
 
+  // Betting state
+  const [balance, setBalance] = useKV<number>('balance', 100);
+  const [currentBet, setCurrentBet] = useState<Bet | null>(null);
+  const [betResults, setBetResults] = useKV<BetResult[]>('bet-results', []);
+
   const gameTimeoutRef = useRef<number | null>(null);
 
   const currentStats = stats ?? { xWins: 0, oWins: 0, draws: 0 };
   const currentXStrategy = xStrategy ?? 'minimax';
   const currentOStrategy = oStrategy ?? 'random';
   const currentSpeed = speed ?? 'normal';
+  const currentBalance = balance ?? 100;
+  const currentBetResults = betResults ?? [];
+
+  // Calculate odds based on current strategies
+  const odds = calculateOdds(currentXStrategy, currentOStrategy);
 
   const handleStartGame = () => {
     if (status === 'playing') return;
+    
+    // Check if there's a bet
+    if (!currentBet) {
+      toast.error('Сделайте ставку перед началом игры!');
+      return;
+    }
     
     setBoard(Array(9).fill(null));
     setCurrentPlayer('X');
@@ -58,7 +77,29 @@ function App() {
       clearTimeout(gameTimeoutRef.current);
       gameTimeoutRef.current = null;
     }
-    handleStartGame();
+    setCurrentBet(null);
+    setStatus('idle');
+    setBoard(Array(9).fill(null));
+    setWinner(null);
+    setWinningLine(null);
+    setLastMove(null);
+  };
+
+  const handlePlaceBet = (player: Player | 'draw', amount: number, betOdds: number) => {
+    if (amount > currentBalance) {
+      toast.error('Недостаточно спичек!');
+      return;
+    }
+
+    const bet = createBet(player === 'draw' ? 'X' : player, amount, betOdds);
+    if (player === 'draw') {
+      // Special handling for draw bets - we'll check this separately
+      (bet as any).isDraw = true;
+    }
+    
+    setCurrentBet(bet);
+    setBalance(currentBalance - amount);
+    toast.success(`Ставка ${amount} спичек на ${player === 'draw' ? 'ничью' : `игрока ${player}`} принята!`);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -88,6 +129,42 @@ function App() {
         else if (result.winner === 'draw') newStats.draws++;
         return newStats;
       });
+
+      // Process betting result
+      if (currentBet) {
+        const isDraw = (currentBet as any).isDraw;
+        let payout = 0;
+        
+        if (isDraw && result.winner === 'draw') {
+          // Draw bet won
+          payout = calculatePayout({ ...currentBet, player: 'X' }, 'draw');
+          payout = Math.round(currentBet.amount * odds.drawOdds);
+        } else if (!isDraw) {
+          payout = calculatePayout(currentBet, result.winner);
+        }
+        
+        const profit = payout;
+        const betResult: BetResult = {
+          ...currentBet,
+          winner: result.winner,
+          profit,
+        };
+        
+        setBetResults([...currentBetResults, betResult]);
+        setBalance(currentBalance + payout);
+        
+        if (profit > currentBet.amount) {
+          toast.success(`🎉 Вы выиграли ${profit - currentBet.amount} спичек!`, {
+            duration: 5000,
+          });
+        } else if (profit === 0) {
+          toast.error(`😞 Вы проиграли ${currentBet.amount} спичек`, {
+            duration: 5000,
+          });
+        } else {
+          toast.info(`Ставка возвращена: ${profit} спичек`);
+        }
+      }
 
       const resultMessage = 
         result.winner === 'draw' 
@@ -148,6 +225,7 @@ function App() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
+            className="space-y-6"
           >
             <Card className="p-6 space-y-4">
               <h2 className="text-xl font-semibold mb-4">Players</h2>
@@ -184,6 +262,15 @@ function App() {
                 disabled={status === 'playing'}
               />
             </Card>
+
+            <BettingPanel
+              balance={currentBalance}
+              xOdds={odds.xOdds}
+              oOdds={odds.oOdds}
+              drawOdds={odds.drawOdds}
+              onPlaceBet={handlePlaceBet}
+              disabled={status === 'playing' || !!currentBet}
+            />
           </motion.div>
 
           <motion.div
@@ -265,10 +352,17 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Statistics</h2>
-            <StatsDisplay stats={currentStats} />
-          </Card>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Statistics</h2>
+              <StatsDisplay stats={currentStats} />
+            </Card>
+            
+            <BettingHistory
+              results={currentBetResults}
+              netProfit={currentBetResults.reduce((sum, r) => sum + (r.profit - r.amount), 0)}
+            />
+          </div>
         </motion.div>
       </div>
     </div>
