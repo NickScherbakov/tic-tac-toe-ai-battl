@@ -246,19 +246,7 @@ function App() {
     };
   }, []);
 
-  // Auto-detect browser language on first visit (if onboard not viewed and default en)
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('kv-language');
-      if (!stored && !onboardViewed) {
-        const navLang = (navigator.language || 'en').slice(0,2) as Language;
-        const supported: Language[] = ['en','ru','ar','zh'];
-        if (supported.includes(navLang) && navLang !== currentLanguage) {
-          setLanguage(navLang);
-        }
-      }
-    } catch {}
-  }, [onboardViewed, currentLanguage, setLanguage]);
+  // Default language remains English; removed auto-detect to keep consistent onboarding.
 
   return (
     <div className={"min-h-screen arena-bg py-10 px-4 relative " + (childMode ? 'child-mode' : '')} dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
