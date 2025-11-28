@@ -1,12 +1,7 @@
 import { Language } from '@/lib/i18n';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Globe } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
 
 interface LanguageSwitcherProps {
   currentLanguage: Language;
@@ -21,28 +16,30 @@ const languages: { code: Language; name: string; nativeName: string }[] = [
 ];
 
 export function LanguageSwitcher({ currentLanguage, onLanguageChange }: LanguageSwitcherProps) {
-  const currentLang = languages.find((l) => l.code === currentLanguage);
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Globe size={16} weight="bold" />
-          <span>{currentLang?.nativeName}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {languages.map((lang) => (
-          <DropdownMenuItem
-            key={lang.code}
-            onClick={() => onLanguageChange(lang.code)}
-            className={currentLanguage === lang.code ? 'bg-accent' : ''}
-          >
-            <span className="font-medium">{lang.nativeName}</span>
-            <span className="text-muted-foreground ml-2 text-xs">({lang.name})</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2">
+      <Globe size={16} weight="bold" className="text-muted-foreground" />
+      <RadioGroup
+        value={currentLanguage}
+        onValueChange={(v) => onLanguageChange(v as Language)}
+        className="flex items-center gap-2"
+      >
+        {languages.map((lang) => {
+          const id = `lang-${lang.code}`;
+          const selected = currentLanguage === lang.code;
+          return (
+            <div key={lang.code} className={cn(
+              'flex items-center gap-2 rounded-md border px-2 py-1 transition-colors cursor-pointer',
+              selected ? 'bg-accent text-accent-foreground border-accent' : 'bg-background'
+            )}>
+              <RadioGroupItem value={lang.code} id={id} />
+              <label htmlFor={id} className="text-sm leading-none cursor-pointer">
+                {lang.nativeName}
+              </label>
+            </div>
+          );
+        })}
+      </RadioGroup>
+    </div>
   );
 }
