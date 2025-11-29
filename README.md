@@ -1,23 +1,46 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+# 🎮 AI vs AI Tic-Tac-Toe Battle
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+Watch AI battle AI in a game of Tic-Tac-Toe! An interactive web application where you can observe different AI strategies compete against each other.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+## 🌐 Live Demo
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+**[Play Now → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+## 🚀 Features
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+- AI vs AI battles with different strategies
+- Interactive and animated game board
+- Sound effects and visual feedback
+- Mobile-friendly responsive design
+- Multi-language support (English/Russian)
 
-📄 License For Spark Template Resources 
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Getting Started
+
+```bash
+# Install dependencies
+npm ci
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
+
+## 📦 Deployment
+
+The project is automatically deployed to GitHub Pages on every push to the `main` branch via GitHub Actions.
+
+## 📄 License
 
 The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
