@@ -136,10 +136,10 @@ export const translations: Record<Language, Translations> = {
     thinking: 'Thinking...',
     
     strategies: {
-      minimax: 'Minimax',
+      minimax: 'Calculated',
       alphabeta: 'Alpha-Beta',
       mcts: 'Monte Carlo',
-      random: 'Random',
+      random: 'Impulsive',
       defensive: 'Defensive',
       offensive: 'Offensive',
     },
@@ -240,12 +240,12 @@ export const translations: Record<Language, Translations> = {
     thinking: 'Думает...',
     
     strategies: {
-      minimax: 'Минимакс',
+      minimax: 'Расчётливая',
       alphabeta: 'Альфа-бета',
       mcts: 'Монте-Карло',
-      random: 'Случайный',
-      defensive: 'Защитный',
-      offensive: 'Атакующий',
+      random: 'Импульсивная',
+      defensive: 'Оборонительная',
+      offensive: 'Наступательная',
     },
     
     gameBoard: 'Игровое поле',
@@ -343,12 +343,12 @@ export const translations: Record<Language, Translations> = {
     thinking: 'يفكر...',
     
     strategies: {
-      minimax: 'مينيماكس',
+      minimax: 'محسوبة',
       alphabeta: 'ألفا بيتا',
       mcts: 'مونت كارلو',
-      random: 'عشوائي',
-      defensive: 'دفاعي',
-      offensive: 'هجومي',
+      random: 'اندفاعية',
+      defensive: 'دفاعية',
+      offensive: 'هجومية',
     },
     
     gameBoard: 'لوحة اللعبة',
@@ -445,10 +445,10 @@ export const translations: Record<Language, Translations> = {
     thinking: '思考中...',
     
     strategies: {
-      minimax: '极小化极大',
+      minimax: '精打细算',
       alphabeta: 'Alpha-Beta',
       mcts: '蒙特卡洛',
-      random: '随机',
+      random: '冲动型',
       defensive: '防守型',
       offensive: '进攻型',
     },

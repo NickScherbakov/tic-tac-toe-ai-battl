@@ -17,12 +17,34 @@ interface StrategySelectProps {
   disabled?: boolean;
 }
 
-const STRATEGIES: { value: AIStrategy; label: string; description: string }[] = [
-  { value: 'random', label: 'Random', description: 'Moves randomly' },
-  { value: 'offensive', label: 'Offensive', description: 'Prioritizes winning' },
-  { value: 'defensive', label: 'Defensive', description: 'Prioritizes blocking' },
-  { value: 'minimax', label: 'Perfect (Minimax)', description: 'Optimal strategy' },
-];
+const STRATEGY_DESCRIPTIONS: Record<Language, Record<AIStrategy, string>> = {
+  en: {
+    random: 'No plan, random moves',
+    offensive: 'Attacks first, ignores threats',
+    defensive: 'Blocks threats, rarely attacks',
+    minimax: 'Thinks ahead, never loses',
+  },
+  ru: {
+    random: 'Без плана, случайные ходы',
+    offensive: 'Атакует, игнорирует угрозы',
+    defensive: 'Блокирует угрозы, редко атакует',
+    minimax: 'Думает наперёд, не проигрывает',
+  },
+  ar: {
+    random: 'بدون خطة، حركات عشوائية',
+    offensive: 'يهاجم أولاً، يتجاهل التهديدات',
+    defensive: 'يحظر التهديدات، نادراً ما يهاجم',
+    minimax: 'يفكر مسبقاً، لا يخسر أبداً',
+  },
+  zh: {
+    random: '无计划，随机走棋',
+    offensive: '先攻击，忽视威胁',
+    defensive: '阻挡威胁，很少进攻',
+    minimax: '深谋远虑，永不输棋',
+  },
+};
+
+const STRATEGIES: AIStrategy[] = ['random', 'offensive', 'defensive', 'minimax'];
 
 export function StrategySelect({ player, strategy, onStrategyChange, disabled, language }: StrategySelectProps) {
   return (
@@ -36,10 +58,10 @@ export function StrategySelect({ player, strategy, onStrategyChange, disabled, l
         </SelectTrigger>
         <SelectContent>
           {STRATEGIES.map((strat) => (
-            <SelectItem key={strat.value} value={strat.value}>
+            <SelectItem key={strat} value={strat}>
               <div className="flex flex-col">
-                <span className="font-medium">{t(language, `strategies.${strat.value}` as any)}</span>
-                <span className="text-xs text-muted-foreground">{strat.description}</span>
+                <span className="font-medium">{t(language, `strategies.${strat}` as any)}</span>
+                <span className="text-xs text-muted-foreground">{STRATEGY_DESCRIPTIONS[language][strat]}</span>
               </div>
             </SelectItem>
           ))}
