@@ -565,54 +565,184 @@ export function MobileFlow() {
             </div>
           )}
 
-          {/* ШАГ 5: Настройка ИИ */}
+          {/* ШАГ 5: Настройка ИИ - ОБРАЗОВАТЕЛЬНЫЙ */}
           {step === 5 && (
             <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 p-6 shadow-2xl">
-              <div className="text-center mb-4">
-                <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-slate-500 to-slate-600 
-                                flex items-center justify-center shadow-lg shadow-slate-500/25">
-                  <span className="text-2xl">⚙️</span>
+              {/* Заголовок с объяснением */}
+              <div className="text-center mb-5">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 
+                                flex items-center justify-center shadow-lg shadow-purple-500/25">
+                  <span className="text-3xl">🧠</span>
                 </div>
-                <h2 className="text-xl font-bold text-white">
-                  {language === 'ru' ? 'Настройка ИИ' : language === 'ar' ? 'إعداد الذكاء' : language === 'zh' ? 'AI设置' : 'AI Setup'}
+                <h2 className="text-xl font-bold text-white mb-2">
+                  {language === 'ru' ? 'Что такое стратегия?' : language === 'ar' ? 'ما هي الاستراتيجية؟' : language === 'zh' ? '什么是策略？' : 'What is Strategy?'}
                 </h2>
+                <p className="text-white/70 text-sm leading-relaxed">
+                  {language === 'ru' 
+                    ? 'Стратегия — это план действий. Как ты думаешь перед ходом? Компьютер тоже думает по-разному!'
+                    : language === 'ar' 
+                      ? 'الاستراتيجية هي خطة عمل. كيف تفكر قبل الحركة؟ الكمبيوتر يفكر بطرق مختلفة أيضًا!'
+                      : language === 'zh'
+                        ? '策略是行动计划。你下棋前怎么想？电脑也会用不同的方式思考！'
+                        : 'Strategy is a plan of action. How do you think before a move? The computer also thinks in different ways!'}
+                </p>
               </div>
-              
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center text-white font-bold text-lg">X</div>
-                    <span className="text-white font-medium">{t(language, 'xPlayer')}</span>
-                  </div>
-                  <StrategySelect player="X" strategy={xStrategy} onStrategyChange={setXStrategy} disabled={status==='playing'} language={language} />
-                </div>
-                
-                <div className="p-4 rounded-xl bg-pink-500/10 border border-pink-500/20">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-pink-500 flex items-center justify-center text-white font-bold text-lg">O</div>
-                    <span className="text-white font-medium">{t(language, 'oPlayer')}</span>
-                  </div>
-                  <StrategySelect player="O" strategy={oStrategy} onStrategyChange={setOStrategy} disabled={status==='playing'} language={language} />
-                </div>
-                
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                      <span className="text-xl">⚡</span>
+
+              {/* Карточки стратегий с объяснениями */}
+              <div className="space-y-3 mb-5">
+                {/* Случайный */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-yellow-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-2xl">🎲</span>
                     </div>
-                    <span className="text-white font-medium">{t(language, 'gameSpeed')}</span>
+                    <div className="flex-1">
+                      <div className="font-bold text-yellow-400 mb-1">
+                        {language === 'ru' ? 'Случайный' : language === 'ar' ? 'عشوائي' : language === 'zh' ? '随机' : 'Random'}
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed">
+                        {language === 'ru' 
+                          ? '🎯 Ходит куда попало, не думает. Как малыш, который тыкает пальцем наугад!'
+                          : language === 'ar'
+                            ? '🎯 يتحرك عشوائياً بدون تفكير. مثل طفل يضغط عشوائياً!'
+                            : language === 'zh'
+                              ? '🎯 随便走，不思考。就像小孩子随便乱点！'
+                              : '🎯 Moves randomly without thinking. Like a toddler poking randomly!'}
+                      </p>
+                    </div>
                   </div>
-                  <SpeedControl speed={speed} onSpeedChange={setSpeed} disabled={status==='playing'} language={language} />
                 </div>
+
+                {/* Защитный */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-blue-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-2xl">🛡️</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-blue-400 mb-1">
+                        {language === 'ru' ? 'Защитник' : language === 'ar' ? 'دفاعي' : language === 'zh' ? '防守型' : 'Defensive'}
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed">
+                        {language === 'ru' 
+                          ? '🎯 Сначала блокирует врага, потом думает о победе. Осторожный игрок!'
+                          : language === 'ar'
+                            ? '🎯 يحظر العدو أولاً، ثم يفكر في الفوز. لاعب حذر!'
+                            : language === 'zh'
+                              ? '🎯 先阻挡对手，再考虑赢。谨慎的玩家！'
+                              : '🎯 Blocks the enemy first, then thinks about winning. A careful player!'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Атакующий */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-red-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-2xl">⚔️</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-red-400 mb-1">
+                        {language === 'ru' ? 'Атакующий' : language === 'ar' ? 'هجومي' : language === 'zh' ? '进攻型' : 'Offensive'}
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed">
+                        {language === 'ru' 
+                          ? '🎯 Сначала атакует, пытается победить! Блокирует только если очень надо.'
+                          : language === 'ar'
+                            ? '🎯 يهاجم أولاً، يحاول الفوز! يحظر فقط إذا لزم الأمر.'
+                            : language === 'zh'
+                              ? '🎯 先进攻，努力取胜！只在必要时才阻挡。'
+                              : '🎯 Attacks first, tries to win! Only blocks if really needed.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Идеальный */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-emerald-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-2xl">🤖</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-emerald-400 mb-1">
+                        {language === 'ru' ? 'Идеальный (Minimax)' : language === 'ar' ? 'مثالي (Minimax)' : language === 'zh' ? '完美 (Minimax)' : 'Perfect (Minimax)'}
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed">
+                        {language === 'ru' 
+                          ? '🎯 Просчитывает ВСЕ ходы наперёд! Никогда не проигрывает. Супер-мозг!'
+                          : language === 'ar'
+                            ? '🎯 يحسب كل الحركات مسبقاً! لا يخسر أبداً. عقل خارق!'
+                            : language === 'zh'
+                              ? '🎯 提前计算所有走法！永不输棋。超级大脑！'
+                              : '🎯 Calculates ALL moves ahead! Never loses. Super brain!'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Вопрос для размышления */}
+              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 mb-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">💡</span>
+                  <span className="font-bold text-purple-300">
+                    {language === 'ru' ? 'Подумай!' : language === 'ar' ? 'فكر!' : language === 'zh' ? '想一想！' : 'Think!'}
+                  </span>
+                </div>
+                <p className="text-sm text-white/80">
+                  {language === 'ru' 
+                    ? 'Какая стратегия победит? Случайный против Идеального? А если два Идеальных?'
+                    : language === 'ar'
+                      ? 'أي استراتيجية ستفوز؟ عشوائي ضد مثالي؟ وماذا لو لعب مثاليان؟'
+                      : language === 'zh'
+                        ? '哪种策略会赢？随机对完美？如果两个完美对战呢？'
+                        : 'Which strategy wins? Random vs Perfect? What if two Perfect ones play?'}
+                </p>
+              </div>
+
+              {/* Выбор стратегий */}
+              <div className="space-y-3 mb-5">
+                <h3 className="text-white font-bold text-center">
+                  {language === 'ru' ? '⚡ Выбери стратегии для боя!' : language === 'ar' ? '⚡ اختر الاستراتيجيات!' : language === 'zh' ? '⚡ 选择对战策略！' : '⚡ Pick strategies for battle!'}
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center text-white font-bold">X</div>
+                      <span className="text-white font-medium text-sm">{t(language, 'xPlayer')}</span>
+                    </div>
+                    <StrategySelect player="X" strategy={xStrategy} onStrategyChange={setXStrategy} disabled={status==='playing'} language={language} />
+                  </div>
+                  
+                  <div className="p-3 rounded-xl bg-pink-500/10 border border-pink-500/30">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-pink-500 flex items-center justify-center text-white font-bold">O</div>
+                      <span className="text-white font-medium text-sm">{t(language, 'oPlayer')}</span>
+                    </div>
+                    <StrategySelect player="O" strategy={oStrategy} onStrategyChange={setOStrategy} disabled={status==='playing'} language={language} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Скорость */}
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 mb-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">⚡</span>
+                  <span className="text-white font-medium text-sm">{t(language, 'gameSpeed')}</span>
+                </div>
+                <SpeedControl speed={speed} onSpeedChange={setSpeed} disabled={status==='playing'} language={language} />
               </div>
               
               <button 
                 onClick={next} 
-                className="w-full mt-6 h-14 rounded-xl bg-gradient-to-r from-rose-600 to-red-500 
+                className="w-full h-14 rounded-xl bg-gradient-to-r from-rose-600 to-red-500 
                            text-white font-semibold text-lg shadow-lg shadow-red-500/25
                            hover:shadow-red-500/40 active:scale-[0.98] transition-all"
               >
-                🔥 {language === 'ru' ? 'В бой!' : language === 'ar' ? 'إلى المعركة!' : language === 'zh' ? '开战!' : 'Battle!'}
+                🔥 {language === 'ru' ? 'Смотреть бой!' : language === 'ar' ? 'شاهد المعركة!' : language === 'zh' ? '观看对战！' : 'Watch the battle!'}
               </button>
             </div>
           )}
