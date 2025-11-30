@@ -293,54 +293,54 @@ export function MobileFlow() {
               
               <div className="space-y-3">
                 {/* Цель */}
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/80 border border-emerald-500/30">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-xl">🎯</span>
                   </div>
                   <div>
-                    <div className="font-semibold text-emerald-400 text-sm mb-1">
+                    <div className="font-bold text-emerald-400 text-sm mb-1">
                       {language === 'ru' ? 'Цель' : language === 'ar' ? 'الهدف' : language === 'zh' ? '目标' : 'Goal'}
                     </div>
-                    <p className="text-sm text-white/80 leading-relaxed">{t(language, 'rules.goal')}</p>
+                    <p className="text-sm text-white font-medium leading-relaxed">{t(language, 'rules.goal')}</p>
                   </div>
                 </div>
                 
                 {/* Как играть */}
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/80 border border-blue-500/30">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-xl">👆</span>
                   </div>
                   <div>
-                    <div className="font-semibold text-blue-400 text-sm mb-1">
+                    <div className="font-bold text-blue-400 text-sm mb-1">
                       {language === 'ru' ? 'Как играть' : language === 'ar' ? 'كيف تلعب' : language === 'zh' ? '玩法' : 'How to Play'}
                     </div>
-                    <p className="text-sm text-white/80 leading-relaxed">{t(language, 'rules.howToPlay')}</p>
+                    <p className="text-sm text-white font-medium leading-relaxed">{t(language, 'rules.howToPlay')}</p>
                   </div>
                 </div>
                 
                 {/* Победа */}
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/80 border border-amber-500/30">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-xl">🏆</span>
                   </div>
                   <div>
-                    <div className="font-semibold text-amber-400 text-sm mb-1">
+                    <div className="font-bold text-amber-400 text-sm mb-1">
                       {language === 'ru' ? 'Победа' : language === 'ar' ? 'الفوز' : language === 'zh' ? '胜利' : 'Win'}
                     </div>
-                    <p className="text-sm text-white/80 leading-relaxed">{t(language, 'rules.winLines')}</p>
+                    <p className="text-sm text-white font-medium leading-relaxed">{t(language, 'rules.winLines')}</p>
                   </div>
                 </div>
                 
                 {/* Ставки */}
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/80 border border-purple-500/30">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-xl">💰</span>
                   </div>
                   <div>
-                    <div className="font-semibold text-purple-400 text-sm mb-1">
+                    <div className="font-bold text-purple-400 text-sm mb-1">
                       {language === 'ru' ? 'Ставки' : language === 'ar' ? 'الرهان' : language === 'zh' ? '投注' : 'Betting'}
                     </div>
-                    <p className="text-sm text-white/80 leading-relaxed">{t(language, 'rules.betting')}</p>
+                    <p className="text-sm text-white font-medium leading-relaxed">{t(language, 'rules.betting')}</p>
                   </div>
                 </div>
               </div>
