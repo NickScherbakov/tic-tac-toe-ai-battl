@@ -20,6 +20,68 @@ import { toast } from 'sonner';
 // Иконки шагов - более современные
 const STEP_ICONS = ['🌐', '📚', '🎯', '💰', '⚙️', '🔥'];
 
+// Генератор математических задач для устного счёта
+type MathProblem = {
+  question: string;
+  answer: number;
+  hint: string; // подсказка для хода решения
+};
+
+function generateMathProblem(): MathProblem {
+  const types = ['add', 'subtract', 'multiply', 'mixed'] as const;
+  const type = types[Math.floor(Math.random() * types.length)];
+  
+  let a: number, b: number, c: number, answer: number, question: string, hint: string;
+  
+  switch (type) {
+    case 'add':
+      a = Math.floor(Math.random() * 50) + 10; // 10-59
+      b = Math.floor(Math.random() * 50) + 10; // 10-59
+      answer = a + b;
+      question = `${a} + ${b} = ?`;
+      hint = `${a} + ${b} = ${Math.floor(a/10)*10} + ${a%10} + ${b} = ...`;
+      break;
+    case 'subtract':
+      a = Math.floor(Math.random() * 50) + 30; // 30-79
+      b = Math.floor(Math.random() * 25) + 5;  // 5-29
+      answer = a - b;
+      question = `${a} − ${b} = ?`;
+      hint = `${a} − ${b} = ${a} − ${Math.floor(b/10)*10} − ${b%10} = ...`;
+      break;
+    case 'multiply':
+      a = Math.floor(Math.random() * 9) + 2;  // 2-10
+      b = Math.floor(Math.random() * 9) + 2;  // 2-10
+      answer = a * b;
+      question = `${a} × ${b} = ?`;
+      hint = `${a} × ${b} = ${a} взять ${b} раз = ...`;
+      break;
+    case 'mixed':
+      a = Math.floor(Math.random() * 20) + 5;  // 5-24
+      b = Math.floor(Math.random() * 10) + 2;  // 2-11
+      c = Math.floor(Math.random() * 10) + 1;  // 1-10
+      answer = a + b * c;
+      question = `${a} + ${b} × ${c} = ?`;
+      hint = `Сначала умножение: ${b} × ${c} = ${b*c}, потом ${a} + ${b*c} = ...`;
+      break;
+    default:
+      a = 5; b = 3; answer = 8; question = '5 + 3 = ?'; hint = '5 + 3 = 8';
+  }
+  
+  return { question, answer, hint };
+}
+
+function generateWrongAnswers(correct: number): number[] {
+  const wrongs = new Set<number>();
+  while (wrongs.size < 3) {
+    const offset = Math.floor(Math.random() * 20) - 10;
+    const wrong = correct + offset;
+    if (wrong !== correct && wrong > 0) {
+      wrongs.add(wrong);
+    }
+  }
+  return Array.from(wrongs);
+}
+
 /**
  * Мобильный линейный флоу: 1) язык, 2) правила, 3) игрок vs ИИ,
  * 4) ставки и правила, 5) конфиг стратегии ИИ, 6) ИИ vs ИИ.
@@ -53,6 +115,13 @@ export function MobileFlow() {
   const setBetResults = (arr: BetResult[]) => setBetResultsKV(arr);
   const [balanceBeforeBet, setBalanceBeforeBet] = useState<number | null>(null);
   const [autoStepLock, setAutoStepLock] = useState<boolean>(false);
+
+  // Состояние для мини-игры "Заработай спички"
+  const [mathProblem, setMathProblem] = useState<MathProblem | null>(null);
+  const [mathAnswerOptions, setMathAnswerOptions] = useState<number[]>([]);
+  const [showMathGame, setShowMathGame] = useState(false);
+  const [mathWorkNotes, setMathWorkNotes] = useState(''); // блокнот для хода вычислений
+  const [mathResult, setMathResult] = useState<'correct' | 'wrong' | null>(null);
 
   const odds = calculateOdds(xStrategy, oStrategy);
 
@@ -198,11 +267,63 @@ export function MobileFlow() {
     playBetSound(true);
   };
 
+  // Открыть мини-игру для заработка спичек
+  const openMathGame = () => {
+    const problem = generateMathProblem();
+    setMathProblem(problem);
+    const wrongAnswers = generateWrongAnswers(problem.answer);
+    const allAnswers = [...wrongAnswers, problem.answer].sort(() => Math.random() - 0.5);
+    setMathAnswerOptions(allAnswers);
+    setMathWorkNotes('');
+    setMathResult(null);
+    setShowMathGame(true);
+  };
+
+  // Проверить ответ
+  const checkMathAnswer = (selectedAnswer: number) => {
+    if (!mathProblem) return;
+    
+    const isCorrect = selectedAnswer === mathProblem.answer;
+    setMathResult(isCorrect ? 'correct' : 'wrong');
+    
+    if (isCorrect) {
+      // Базовая награда + бонус за записи
+      const baseReward = 30;
+      const notesBonus = mathWorkNotes.trim().length >= 10 ? 20 : 0; // +20 за записи
+      const totalReward = baseReward + notesBonus;
+      
+      setTimeout(() => {
+        setBalance(balance + totalReward);
+        if (notesBonus > 0) {
+          toast.success(
+            language === 'ru' 
+              ? `🎉 Правильно! +${baseReward} спичек + ${notesBonus} бонус за записи!`
+              : `🎉 Correct! +${baseReward} matches + ${notesBonus} bonus for notes!`
+          );
+        } else {
+          toast.success(
+            language === 'ru' 
+              ? `✅ Правильно! +${baseReward} спичек`
+              : `✅ Correct! +${baseReward} matches`
+          );
+        }
+        playEarnSound(true);
+        setShowMathGame(false);
+      }, 1500);
+    } else {
+      setTimeout(() => {
+        toast.error(
+          language === 'ru' 
+            ? `❌ Неверно. Правильный ответ: ${mathProblem.answer}`
+            : `❌ Wrong. Correct answer: ${mathProblem.answer}`
+        );
+      }, 500);
+    }
+  };
+
+  // Старая функция для совместимости (теперь открывает мини-игру)
   const earnMatches = () => {
-    const EARN_AMOUNT = 50;
-    setBalance(balance + EARN_AMOUNT);
-    toast.success(t(language, 'toasts.matchesEarned', { amount: EARN_AMOUNT.toString() }));
-    playEarnSound(true);
+    openMathGame();
   };
 
   // Автоматическая игра ИИ
@@ -579,28 +700,28 @@ export function MobileFlow() {
               </div>
 
               {/* Как заработать спички */}
-              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 mb-5">
+              <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 mb-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">🪵</span>
-                  <span className="font-bold text-amber-300">
-                    {language === 'ru' ? 'Как заработать спички?' : language === 'ar' ? 'كيف تكسب أعواد الثقاب؟' : language === 'zh' ? '如何赚取火柴？' : 'How to earn matches?'}
+                  <span className="text-xl">🧮</span>
+                  <span className="font-bold text-green-300">
+                    {language === 'ru' ? 'Заработай спички!' : language === 'ar' ? 'اكسب أعواد الثقاب!' : language === 'zh' ? '赚取火柴！' : 'Earn matches!'}
                   </span>
                 </div>
                 <p className="text-sm text-white/80 mb-3">
                   {language === 'ru' 
-                    ? 'Если спичек не хватает — не беда! Можно получить бонус за просмотр обучения или выигрывать ставки.'
+                    ? 'Реши пример в уме — получи спички! Запиши ход решения в блокнот — получи бонус!'
                     : language === 'ar'
-                      ? 'إذا لم يكن لديك ما يكفي - لا مشكلة! يمكنك الحصول على مكافأة لمشاهدة التعليم أو الفوز بالرهانات.'
+                      ? 'حل المسألة ذهنياً - احصل على أعواد الثقاب! اكتب خطوات الحل - احصل على مكافأة!'
                       : language === 'zh'
-                        ? '火柴不够？没关系！可以通过观看教程获得奖励或赢得投注。'
-                        : 'Not enough matches? No problem! Get bonus for watching tutorials or winning bets.'}
+                        ? '心算解题 - 获得火柴！写下解题步骤 - 获得奖励！'
+                        : 'Solve in your head — get matches! Write your steps — get bonus!'}
                 </p>
                 <button 
-                  onClick={earnMatches} 
-                  className="w-full py-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium
-                             hover:from-amber-400 hover:to-orange-400 active:scale-[0.98] transition-all shadow-lg shadow-orange-500/25"
+                  onClick={openMathGame} 
+                  className="w-full py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium
+                             hover:from-green-400 hover:to-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-green-500/25"
                 >
-                  🎁 {language === 'ru' ? 'Получить +50 спичек' : language === 'ar' ? 'احصل على +50' : language === 'zh' ? '获取 +50 火柴' : 'Get +50 matches'}
+                  🧮 {language === 'ru' ? 'Решить пример (+30🪵)' : language === 'ar' ? 'حل المسألة (+30🪵)' : language === 'zh' ? '解题 (+30🪵)' : 'Solve problem (+30🪵)'}
                 </button>
               </div>
 
@@ -966,6 +1087,144 @@ export function MobileFlow() {
             </div>
           )}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Модальное окно: Мини-игра "Заработай спички" */}
+      <AnimatePresence>
+        {showMathGame && mathProblem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => !mathResult && setShowMathGame(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/20 p-6 shadow-2xl"
+            >
+              {/* Заголовок */}
+              <div className="text-center mb-5">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 
+                                flex items-center justify-center shadow-lg">
+                  <span className="text-3xl">🧮</span>
+                </div>
+                <h2 className="text-xl font-bold text-white mb-1">
+                  {language === 'ru' ? 'Реши в уме!' : language === 'ar' ? 'احسب ذهنياً!' : language === 'zh' ? '心算！' : 'Mental Math!'}
+                </h2>
+                <p className="text-white/60 text-sm">
+                  {language === 'ru' 
+                    ? 'Правильный ответ = +30 спичек' 
+                    : 'Correct answer = +30 matches'}
+                </p>
+              </div>
+
+              {/* Задача */}
+              <div className="p-4 rounded-xl bg-white/10 border border-white/20 mb-4 text-center">
+                <div className="text-3xl font-bold text-white mb-2">
+                  {mathProblem.question}
+                </div>
+              </div>
+
+              {/* Блокнот для записей */}
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">📝</span>
+                  <span className="text-white/80 text-sm font-medium">
+                    {language === 'ru' ? 'Игровой блокнот (бонус +20🪵)' : 'Work notes (bonus +20🪵)'}
+                  </span>
+                </div>
+                <textarea
+                  value={mathWorkNotes}
+                  onChange={(e) => setMathWorkNotes(e.target.value)}
+                  placeholder={language === 'ru' 
+                    ? 'Напиши, как ты решал...\nНапример: 47 + 28 = 47 + 30 - 2 = 77 - 2 = 75' 
+                    : 'Write how you solved it...'}
+                  className="w-full h-20 p-3 rounded-xl bg-slate-700/50 border border-white/10 text-white text-sm 
+                             placeholder:text-white/30 resize-none focus:outline-none focus:border-emerald-500/50"
+                  disabled={!!mathResult}
+                />
+                {mathWorkNotes.trim().length >= 10 && !mathResult && (
+                  <p className="text-xs text-emerald-400 mt-1">
+                    ✓ {language === 'ru' ? 'Бонус за записи активирован!' : 'Notes bonus activated!'}
+                  </p>
+                )}
+              </div>
+
+              {/* Результат */}
+              {mathResult && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className={`p-4 rounded-xl mb-4 text-center ${
+                    mathResult === 'correct' 
+                      ? 'bg-emerald-500/20 border border-emerald-500/40' 
+                      : 'bg-red-500/20 border border-red-500/40'
+                  }`}
+                >
+                  <span className="text-4xl mb-2 block">
+                    {mathResult === 'correct' ? '🎉' : '😔'}
+                  </span>
+                  <span className={`text-lg font-bold ${
+                    mathResult === 'correct' ? 'text-emerald-400' : 'text-red-400'
+                  }`}>
+                    {mathResult === 'correct' 
+                      ? (language === 'ru' ? 'Правильно!' : 'Correct!') 
+                      : (language === 'ru' ? `Ответ: ${mathProblem.answer}` : `Answer: ${mathProblem.answer}`)}
+                  </span>
+                </motion.div>
+              )}
+
+              {/* Варианты ответов */}
+              {!mathResult && (
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {mathAnswerOptions.map((option, i) => (
+                    <button
+                      key={i}
+                      onClick={() => checkMathAnswer(option)}
+                      className="h-14 rounded-xl bg-white/10 border border-white/20 text-white text-xl font-bold
+                                 hover:bg-white/20 hover:border-white/30 active:scale-95 transition-all"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Кнопки */}
+              <div className="flex gap-3">
+                {!mathResult && (
+                  <button
+                    onClick={() => setShowMathGame(false)}
+                    className="flex-1 h-12 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium
+                               hover:bg-white/10 active:scale-95 transition-all"
+                  >
+                    {language === 'ru' ? 'Отмена' : 'Cancel'}
+                  </button>
+                )}
+                {mathResult === 'wrong' && (
+                  <button
+                    onClick={openMathGame}
+                    className="flex-1 h-12 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium
+                               hover:from-amber-400 hover:to-orange-400 active:scale-95 transition-all"
+                  >
+                    🔄 {language === 'ru' ? 'Ещё задача' : 'Try again'}
+                  </button>
+                )}
+              </div>
+
+              {/* Подсказка */}
+              {!mathResult && (
+                <p className="text-center text-white/40 text-xs mt-4">
+                  💡 {language === 'ru' ? 'Подсказка: ' : 'Hint: '}{mathProblem.hint}
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
