@@ -8,6 +8,8 @@ Watch AI battle AI in a game of Tic-Tac-Toe! An interactive web application wher
 
 **[Play Now → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**
 
+- Forced mobile mode: [Open MobileFlow](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
+
 ## 🚀 Features
 
 - AI vs AI battles with different strategies
