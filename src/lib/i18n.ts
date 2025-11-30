@@ -4,6 +4,15 @@ export interface Translations {
   // Header
   title: string;
   subtitle: string;
+  language?: string;
+  rulesTitle?: string;
+  step?: string;
+  rules?: {
+    goal: string;
+    howToPlay: string;
+    winLines: string;
+    betting: string;
+  };
   
   // Players Section
   players: string;
@@ -35,6 +44,7 @@ export interface Translations {
   
   // Betting
   totalizator: string;
+  betting?: string;
     balance: string;
   matches: string;
   selectOutcome: string;
@@ -109,6 +119,15 @@ export const translations: Record<Language, Translations> = {
   en: {
     title: 'AI vs AI Tic-Tac-Toe',
     subtitle: 'Watch two AI strategies battle it out',
+    language: 'Language',
+    rulesTitle: 'Game Rules',
+    step: 'Step',
+    rules: {
+      goal: 'Goal: make a line of three marks (row, column, diagonal).',
+      howToPlay: 'Turns alternate. Tap a cell to place a mark.',
+      winLines: 'Winning lines: 3 in a row, 3 in a column, or 3 diagonally.',
+      betting: 'Betting: choose outcome (X, O, Draw), place matches, and watch the game.',
+    },
     
     players: 'Players',
       xPlayer: 'Player X',
@@ -135,6 +154,7 @@ export const translations: Record<Language, Translations> = {
     placeBet: 'Place Bet',
     
     totalizator: 'Betting',
+    betting: 'Betting',
       balance: 'Balance',
     matches: 'matches',
     selectOutcome: 'Select outcome',
@@ -202,6 +222,15 @@ export const translations: Record<Language, Translations> = {
   ru: {
     title: 'ИИ против ИИ - Крестики-нолики',
     subtitle: 'Наблюдайте за битвой двух стратегий ИИ',
+    language: 'Язык',
+    rulesTitle: 'Правила игры',
+    step: 'Шаг',
+    rules: {
+      goal: 'Цель: собрать линию из трёх символов (ряд, столбец, диагональ).',
+      howToPlay: 'Ходы по очереди. Нажмите на клетку, чтобы поставить символ.',
+      winLines: 'Выигрышные линии: 3 в ряд, 3 в столбец или 3 по диагонали.',
+      betting: 'Ставки: выберите исход (X, O, ничья), поставьте спички и наблюдайте игру.',
+    },
     
     players: 'Игроки',
       xPlayer: 'Игрок X',
@@ -229,6 +258,7 @@ export const translations: Record<Language, Translations> = {
     placeBet: 'Сделать ставку',
     
     totalizator: 'Тотализатор',
+    betting: 'Тотализатор',
     matches: 'спичек',
     selectOutcome: 'Выберите исход',
     draw: 'Ничья',
@@ -295,6 +325,15 @@ export const translations: Record<Language, Translations> = {
   ar: {
     title: 'الذكاء الاصطناعي ضد الذكاء الاصطناعي - تيك تاك تو',
     subtitle: 'شاهد معركة استراتيجيتين للذكاء الاصطناعي',
+    language: 'اللغة',
+    rulesTitle: 'قواعد اللعبة',
+    step: 'الخطوة',
+    rules: {
+      goal: 'الهدف: صنع صف من ثلاثة رموز (صف، عمود، قطري).',
+      howToPlay: 'الأدوار تتناوب. اضغط على خلية لوضع الرمز.',
+      winLines: 'خطوط الفوز: 3 في صف، 3 في عمود، أو 3 قطريًا.',
+      betting: 'الرهان: اختر النتيجة (X أو O أو تعادل)، ضع الأعواد، وشاهد المباراة.',
+    },
     
     players: 'اللاعبون',
       xPlayer: 'اللاعب X',
@@ -322,6 +361,7 @@ export const translations: Record<Language, Translations> = {
     placeBet: 'ضع الرهان',
     
     totalizator: 'الرهان',
+    betting: 'الرهان',
     matches: 'أعواد',
     selectOutcome: 'اختر النتيجة',
     draw: 'تعادل',
@@ -388,6 +428,15 @@ export const translations: Record<Language, Translations> = {
   zh: {
     title: 'AI对战AI - 井字棋',
     subtitle: '观看两个AI策略的对决',
+    language: '语言',
+    rulesTitle: '游戏规则',
+    step: '步骤',
+    rules: {
+      goal: '目标：连成三个相同符号（行、列、对角线）。',
+      howToPlay: '轮流下子。点击格子放置符号。',
+      winLines: '胜利条件：同行三连、同列三连或对角线三连。',
+      betting: '投注：选择结果（X、O、平局），下注火柴并观看比赛。',
+    },
     
     players: '玩家',
       xPlayer: '玩家 X',
@@ -414,6 +463,7 @@ export const translations: Record<Language, Translations> = {
     placeBet: '下注',
     
     totalizator: '投注',
+    betting: '投注',
       balance: '余额',
     matches: '火柴',
     selectOutcome: '选择结果',

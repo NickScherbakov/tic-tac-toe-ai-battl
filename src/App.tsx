@@ -17,6 +17,8 @@ import { BettingHistory } from '@/components/BettingHistory';
 import { FloatingMatches } from '@/components/FloatingMatches';
 import { OnboardingOverlay } from '@/components/OnboardingOverlay';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { MobileFlow } from '@/components/MobileFlow';
+import { useIsTouchMobile } from '@/hooks/use-mobile';
 import { ChildModeToggle } from '@/components/ChildModeToggle';
 import { Player, GameStatus, Winner, GameStats, checkWinner } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
@@ -26,6 +28,7 @@ import { Language, t } from '@/lib/i18n';
 import { toast } from 'sonner';
 
 function App() {
+  const isTouchMobile = useIsTouchMobile();
   const [board, setBoard] = useState<Player[]>(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
   const [status, setStatus] = useState<GameStatus>('idle');
@@ -247,6 +250,11 @@ function App() {
   }, []);
 
   // Default language remains English; removed auto-detect to keep consistent onboarding.
+
+  // Мобильный флоу: отдельный упрощённый интерфейс
+  if (isTouchMobile) {
+    return <MobileFlow />;
+  }
 
   return (
     <div className={"min-h-screen arena-bg py-10 px-4 relative " + (childMode ? 'child-mode' : '')} dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}>
