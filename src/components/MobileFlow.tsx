@@ -140,6 +140,7 @@ export function MobileFlow() {
         const finalBalance = (balanceBeforeBet ?? balance) - currentBet.amount + payout;
         setBalance(finalBalance);
         setBalanceBeforeBet(null);
+        setCurrentBet(null); // Сбрасываем ставку после игры
         if (profit > 0) toast.success(t(language, 'toasts.youWon', { amount: profit.toString() }));
         else if (profit < 0) toast.error(t(language, 'toasts.youLost', { amount: (-profit).toString() }));
         else toast.info(t(language, 'toasts.betReturned'));
@@ -186,9 +187,10 @@ export function MobileFlow() {
     }
     const bet = createBet(player === 'draw' ? 'X' : player, amount, betOdds);
     (bet as any).betType = player;
+    // Сохраняем баланс ДО ставки, но НЕ вычитаем сразу - вычтем после игры
     setBalanceBeforeBet(balance);
     setCurrentBet(bet);
-    setBalance(balance - amount);
+    // НЕ вычитаем баланс сразу - это делается после окончания игры в makeAIMove
     const message = player === 'draw'
       ? t(language, 'toasts.betAcceptedDraw', { amount: amount.toString() })
       : t(language, 'toasts.betAccepted', { amount: amount.toString(), player: String(player) });
@@ -246,9 +248,17 @@ export function MobileFlow() {
               <div className="text-2xl font-bold text-white">{balance}</div>
             </div>
           </div>
-          <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg shadow-purple-500/25">
-            <div className="text-xs text-white/70 text-center">{step}/6</div>
-            <div className="text-sm font-bold text-white">{stepTitles[language][step - 1]}</div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg shadow-purple-500/25">
+              <div className="text-xs text-white/70 text-center">{step}/6</div>
+              <div className="text-sm font-bold text-white">{stepTitles[language][step - 1]}</div>
+            </div>
+            {/* Индикатор активной ставки */}
+            {currentBet && (
+              <div className="px-3 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-xs text-amber-300 font-medium">
+                🎯 {(currentBet as any).betType === 'draw' ? '=' : (currentBet as any).betType} • {currentBet.amount}🪵
+              </div>
+            )}
           </div>
         </div>
 
@@ -498,7 +508,8 @@ export function MobileFlow() {
                 language={language}
               />
               
-              {balance < 20 && (
+              {/* Показываем предупреждение только если баланс низкий И нет активной ставки */}
+              {balance < 10 && !currentBet && (
                 <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
@@ -516,13 +527,40 @@ export function MobileFlow() {
                 </div>
               )}
               
+              {/* Показываем подтверждение ставки */}
+              {currentBet && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">✅</span>
+                    <div className="flex-1">
+                      <div className="text-white font-medium">
+                        {language === 'ru' ? 'Ставка принята!' : language === 'ar' ? 'تم قبول الرهان!' : language === 'zh' ? '投注已接受!' : 'Bet placed!'}
+                      </div>
+                      <div className="text-sm text-emerald-300/80">
+                        {currentBet.amount}🪵 → {(currentBet as any).betType === 'draw' ? '=' : (currentBet as any).betType}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
               <button 
                 onClick={next} 
-                className="w-full mt-4 h-12 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 
-                           text-white font-medium shadow-lg shadow-violet-500/25
-                           hover:shadow-violet-500/40 active:scale-[0.98] transition-all"
+                className={`w-full mt-4 h-12 rounded-xl font-medium shadow-lg 
+                           active:scale-[0.98] transition-all ${
+                  currentBet 
+                    ? 'bg-gradient-to-r from-emerald-600 to-green-500 shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                    : 'bg-gradient-to-r from-indigo-600 to-violet-500 shadow-violet-500/25 hover:shadow-violet-500/40'
+                } text-white`}
               >
-                {language === 'ru' ? 'Настроить ИИ' : language === 'ar' ? 'إعداد الذكاء' : language === 'zh' ? '设置AI' : 'Setup AI'} →
+                {currentBet 
+                  ? (language === 'ru' ? '🔥 К игре!' : language === 'ar' ? '🔥 إلى اللعب!' : language === 'zh' ? '🔥 开始游戏!' : '🔥 Go Play!')
+                  : (language === 'ru' ? 'Настроить ИИ' : language === 'ar' ? 'إعداد الذكاء' : language === 'zh' ? '设置AI' : 'Setup AI')
+                } →
               </button>
             </div>
           )}
