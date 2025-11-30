@@ -702,7 +702,7 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-yellow-400 mb-1">
-                        {language === 'ru' ? 'Импульсивный' : language === 'ar' ? 'اندفاعي' : language === 'zh' ? '冲动型' : 'Impulsive'}
+                        {language === 'ru' ? 'Импульсивная' : language === 'ar' ? 'اندفاعية' : language === 'zh' ? '冲动型' : 'Impulsive'}
                       </div>
                       <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
@@ -734,7 +734,7 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-blue-400 mb-1">
-                        {language === 'ru' ? 'Оборона' : language === 'ar' ? 'دفاعي' : language === 'zh' ? '防守型' : 'Defensive'}
+                        {language === 'ru' ? 'Оборонительная' : language === 'ar' ? 'دفاعية' : language === 'zh' ? '防守型' : 'Defensive'}
                       </div>
                       <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
@@ -766,7 +766,7 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-red-400 mb-1">
-                        {language === 'ru' ? 'Агрессор' : language === 'ar' ? 'عدواني' : language === 'zh' ? '攻击型' : 'Aggressor'}
+                        {language === 'ru' ? 'Наступательная' : language === 'ar' ? 'هجومية' : language === 'zh' ? '进攻型' : 'Offensive'}
                       </div>
                       <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
@@ -798,7 +798,7 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-emerald-400 mb-1">
-                        {language === 'ru' ? 'Продуманный' : language === 'ar' ? 'متوازن' : language === 'zh' ? '深思熟虑' : 'Strategic'}
+                        {language === 'ru' ? 'Расчётливая' : language === 'ar' ? 'محسوبة' : language === 'zh' ? '精打细算' : 'Calculated'}
                       </div>
                       <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
