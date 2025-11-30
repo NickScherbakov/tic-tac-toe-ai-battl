@@ -483,65 +483,169 @@ export function MobileFlow() {
             </div>
           )}
 
-          {/* ШАГ 4: Ставки */}
+          {/* ШАГ 4: Инвестиции - ОБРАЗОВАТЕЛЬНЫЙ */}
           {step === 4 && (
             <div className="rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 p-6 shadow-2xl">
-              <div className="text-center mb-4">
-                <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 
-                                flex items-center justify-center shadow-lg shadow-purple-500/25">
-                  <span className="text-2xl">💰</span>
+              {/* Заголовок */}
+              <div className="text-center mb-5">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 
+                                flex items-center justify-center shadow-lg shadow-orange-500/25">
+                  <span className="text-3xl">📊</span>
                 </div>
-                <h2 className="text-xl font-bold text-white">{t(language, 'betting')}</h2>
-                <p className="text-white/50 text-xs mt-1">
-                  {language === 'ru' ? 'Выберите победителя' : language === 'ar' ? 'اختر الفائز' : language === 'zh' ? '选择赢家' : 'Pick the winner'}
+                <h2 className="text-xl font-bold text-white mb-2">
+                  {language === 'ru' ? 'Учимся инвестировать' : language === 'ar' ? 'تعلم الاستثمار' : language === 'zh' ? '学习投资' : 'Learn to Invest'}
+                </h2>
+                <p className="text-white/70 text-sm leading-relaxed">
+                  {language === 'ru' 
+                    ? 'Инвестиция — это когда ты вкладываешь ресурсы, надеясь получить больше. Но есть риск потерять!'
+                    : language === 'ar' 
+                      ? 'الاستثمار هو عندما تضع مواردك أملاً في الحصول على المزيد. لكن هناك خطر الخسارة!'
+                      : language === 'zh'
+                        ? '投资是指你投入资源，希望获得更多回报。但也有损失的风险！'
+                        : 'Investment is when you put in resources hoping to get more. But there\'s risk of losing!'}
                 </p>
               </div>
-              
-              <BettingPanel
-                balance={balance}
-                xOdds={odds.xOdds}
-                oOdds={odds.oOdds}
-                drawOdds={odds.drawOdds}
-                onPlaceBet={placeBet}
-                onEarnMatches={earnMatches}
-                disabled={status === 'playing' || !!currentBet}
-                language={language}
-              />
-              
-              {/* Показываем предупреждение только если баланс низкий И нет активной ставки */}
-              {balance < 10 && !currentBet && (
-                <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl">⚠️</span>
-                      <span className="text-sm text-amber-200/90">{language === 'ru' ? 'Мало спичек!' : 'Low balance!'}</span>
+
+              {/* Образовательные карточки */}
+              <div className="space-y-3 mb-5">
+                {/* Что такое коэффициент */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-cyan-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xl">📈</span>
                     </div>
-                    <button 
-                      onClick={earnMatches} 
-                      className="px-4 py-2 rounded-lg bg-amber-500 text-white font-medium text-sm
-                                 hover:bg-amber-400 active:scale-95 transition-all"
-                    >
-                      +50 🪵
-                    </button>
+                    <div className="flex-1">
+                      <div className="font-bold text-cyan-400 mb-1">
+                        {language === 'ru' ? 'Коэффициент (множитель)' : language === 'ar' ? 'المُضاعِف' : language === 'zh' ? '赔率（乘数）' : 'Odds (multiplier)'}
+                      </div>
+                      <p className="text-sm text-white/90 leading-relaxed">
+                        {language === 'ru' 
+                          ? 'Показывает, во сколько раз увеличится твоя ставка при выигрыше. Коэффициент 2.0x = удвоение!'
+                          : language === 'ar'
+                            ? 'يُظهر كم ستتضاعف ستافتك عند الفوز. معامل 2.0x = مضاعفة!'
+                            : language === 'zh'
+                              ? '显示获胜时你的投注会翻多少倍。2.0倍 = 翻倍！'
+                              : 'Shows how many times your bet multiplies when you win. 2.0x = doubling!'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              )}
+
+                {/* Риск и награда */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-purple-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xl">⚖️</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-purple-400 mb-1">
+                        {language === 'ru' ? 'Риск и награда' : language === 'ar' ? 'المخاطرة والمكافأة' : language === 'zh' ? '风险与回报' : 'Risk & Reward'}
+                      </div>
+                      <p className="text-sm text-white/90 leading-relaxed">
+                        {language === 'ru' 
+                          ? 'Высокий коэффициент = большая награда, но и больший риск! Низкий = безопаснее, но меньше прибыль.'
+                          : language === 'ar'
+                            ? 'معامل عالي = مكافأة كبيرة لكن خطر أكبر! منخفض = أكثر أماناً لكن ربح أقل.'
+                            : language === 'zh'
+                              ? '高赔率 = 高回报，但风险也大！低赔率 = 更安全，但利润少。'
+                              : 'High odds = big reward, but more risk! Low = safer, but less profit.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Умный выбор */}
+                <div className="p-4 rounded-xl bg-slate-800/80 border border-emerald-500/30">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xl">🎯</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-emerald-400 mb-1">
+                        {language === 'ru' ? 'Умный выбор' : language === 'ar' ? 'الاختيار الذكي' : language === 'zh' ? '明智选择' : 'Smart Choice'}
+                      </div>
+                      <p className="text-sm text-white/90 leading-relaxed">
+                        {language === 'ru' 
+                          ? 'Подумай: какая стратегия сильнее? На неё коэффициент ниже (меньше риск). Анализируй!'
+                          : language === 'ar'
+                            ? 'فكر: أي استراتيجية أقوى؟ معاملها أقل (خطر أقل). حلل!'
+                            : language === 'zh'
+                              ? '想一想：哪种策略更强？它的赔率较低（风险小）。要分析！'
+                              : 'Think: which strategy is stronger? Its odds are lower (less risk). Analyze!'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Как заработать спички */}
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 mb-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🪵</span>
+                  <span className="font-bold text-amber-300">
+                    {language === 'ru' ? 'Как заработать спички?' : language === 'ar' ? 'كيف تكسب أعواد الثقاب؟' : language === 'zh' ? '如何赚取火柴？' : 'How to earn matches?'}
+                  </span>
+                </div>
+                <p className="text-sm text-white/80 mb-3">
+                  {language === 'ru' 
+                    ? 'Если спичек не хватает — не беда! Можно получить бонус за просмотр обучения или выигрывать ставки.'
+                    : language === 'ar'
+                      ? 'إذا لم يكن لديك ما يكفي - لا مشكلة! يمكنك الحصول على مكافأة لمشاهدة التعليم أو الفوز بالرهانات.'
+                      : language === 'zh'
+                        ? '火柴不够？没关系！可以通过观看教程获得奖励或赢得投注。'
+                        : 'Not enough matches? No problem! Get bonus for watching tutorials or winning bets.'}
+                </p>
+                <button 
+                  onClick={earnMatches} 
+                  className="w-full py-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium
+                             hover:from-amber-400 hover:to-orange-400 active:scale-[0.98] transition-all shadow-lg shadow-orange-500/25"
+                >
+                  🎁 {language === 'ru' ? 'Получить +50 спичек' : language === 'ar' ? 'احصل على +50' : language === 'zh' ? '获取 +50 火柴' : 'Get +50 matches'}
+                </button>
+              </div>
+
+              {/* Текущий баланс */}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🪵</span>
+                  <span className="text-white/70 text-sm">{language === 'ru' ? 'Твой баланс:' : 'Your balance:'}</span>
+                </div>
+                <span className="text-2xl font-bold text-white">{balance}</span>
+              </div>
+
+              {/* Панель ставок */}
+              <div className="mb-4">
+                <h3 className="text-white font-bold text-center mb-3">
+                  {language === 'ru' ? '🎯 Сделай свой выбор!' : language === 'ar' ? '🎯 اختر!' : language === 'zh' ? '🎯 做出选择！' : '🎯 Make your choice!'}
+                </h3>
+                <BettingPanel
+                  balance={balance}
+                  xOdds={odds.xOdds}
+                  oOdds={odds.oOdds}
+                  drawOdds={odds.drawOdds}
+                  onPlaceBet={placeBet}
+                  onEarnMatches={earnMatches}
+                  disabled={status === 'playing' || !!currentBet}
+                  language={language}
+                />
+              </div>
               
               {/* Показываем подтверждение ставки */}
               {currentBet && (
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30"
+                  className="mb-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">✅</span>
                     <div className="flex-1">
                       <div className="text-white font-medium">
-                        {language === 'ru' ? 'Ставка принята!' : language === 'ar' ? 'تم قبول الرهان!' : language === 'zh' ? '投注已接受!' : 'Bet placed!'}
+                        {language === 'ru' ? 'Инвестиция сделана!' : language === 'ar' ? 'تم الاستثمار!' : language === 'zh' ? '投资完成！' : 'Investment made!'}
                       </div>
                       <div className="text-sm text-emerald-300/80">
-                        {currentBet.amount}🪵 → {(currentBet as any).betType === 'draw' ? '=' : (currentBet as any).betType}
+                        {currentBet.amount}🪵 → {(currentBet as any).betType === 'draw' ? '=' : (currentBet as any).betType} 
+                        ({language === 'ru' ? 'возможный выигрыш' : 'potential win'}: {Math.round(currentBet.amount * currentBet.odds)}🪵)
                       </div>
                     </div>
                   </div>
@@ -550,7 +654,7 @@ export function MobileFlow() {
               
               <button 
                 onClick={next} 
-                className={`w-full mt-4 h-12 rounded-xl font-medium shadow-lg 
+                className={`w-full h-12 rounded-xl font-medium shadow-lg 
                            active:scale-[0.98] transition-all ${
                   currentBet 
                     ? 'bg-gradient-to-r from-emerald-600 to-green-500 shadow-emerald-500/25 hover:shadow-emerald-500/40'
