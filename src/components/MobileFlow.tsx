@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKV } from '@github/spark/hooks';
 import { Card } from '@/components/ui/card';
@@ -36,6 +36,7 @@ export function MobileFlow() {
   const [winningLine, setWinningLine] = useState<number[] | null>(null);
   const [lastMove, setLastMove] = useState<number | null>(null);
   const [isThinking, setIsThinking] = useState(false);
+  const gameTimeoutRef = useRef<number | null>(null);
 
   const [xStrategy, setXStrategy] = useState<AIStrategy>('minimax');
   const [oStrategy, setOStrategy] = useState<AIStrategy>('random');
@@ -73,18 +74,17 @@ export function MobileFlow() {
   const startGame = () => {
     if (status === 'playing') return;
     ensureAudioUnlocked();
+    // Очищаем предыдущий таймер если есть
+    if (gameTimeoutRef.current) {
+      clearTimeout(gameTimeoutRef.current);
+      gameTimeoutRef.current = null;
+    }
     setBoard(Array(9).fill(null));
     setCurrentPlayer('X');
     setStatus('playing');
     setWinner(null);
     setWinningLine(null);
     setLastMove(null);
-    setIsThinking(true);
-    const delay = getSpeedDelay(speed);
-    setTimeout(() => {
-      makeAIMove(board, currentPlayer);
-      setIsThinking(false);
-    }, delay);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -101,7 +101,6 @@ export function MobileFlow() {
       setWinner(result.winner);
       setWinningLine(result.winningLine);
       setStatus('finished');
-      setIsThinking(false);
       // лёгкая вибрация при завершении партии (если поддерживается)
       try {
         if ('vibrate' in navigator) {
@@ -151,6 +150,34 @@ export function MobileFlow() {
     }
   };
 
+  // useEffect для автоматических ходов ИИ
+  useEffect(() => {
+    if (status === 'playing' && currentPlayer) {
+      setIsThinking(true);
+      const delay = getSpeedDelay(speed);
+      
+      gameTimeoutRef.current = window.setTimeout(() => {
+        makeAIMove(board, currentPlayer);
+        setIsThinking(false);
+      }, delay);
+
+      return () => {
+        if (gameTimeoutRef.current) {
+          clearTimeout(gameTimeoutRef.current);
+        }
+      };
+    }
+  }, [status, currentPlayer, board]);
+
+  // Очистка при размонтировании
+  useEffect(() => {
+    return () => {
+      if (gameTimeoutRef.current) {
+        clearTimeout(gameTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const placeBet = (player: Player | 'draw', amount: number, betOdds: number) => {
     ensureAudioUnlocked();
     if (amount > balance) {
@@ -175,6 +202,34 @@ export function MobileFlow() {
     toast.success(t(language, 'toasts.matchesEarned', { amount: EARN_AMOUNT.toString() }));
     playEarnSound(true);
   };
+
+  // Автоматическая игра ИИ
+  useEffect(() => {
+    if (status === 'playing' && currentPlayer) {
+      const delay = getSpeedDelay(speed);
+      gameTimeoutRef.current = window.setTimeout(() => {
+        makeAIMove(board, currentPlayer);
+      }, delay);
+    }
+    
+    return () => {
+      if (gameTimeoutRef.current) {
+        clearTimeout(gameTimeoutRef.current);
+        gameTimeoutRef.current = null;
+      }
+    };
+  }, [status, currentPlayer, board]);
+
+  // Авто-старт игры на шаге 3
+  useEffect(() => {
+    if (step === 3 && status === 'idle') {
+      // Небольшая задержка для плавности
+      const timer = setTimeout(() => {
+        startGame();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-4 pb-8">
