@@ -1,5 +1,7 @@
 # 🎮 AI vs AI Tic-Tac-Toe Battle
 
+[![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
+
 Watch AI battle AI in a game of Tic-Tac-Toe! An interactive web application where you can observe different AI strategies compete against each other.
 
 ## 🌐 Live Demo
