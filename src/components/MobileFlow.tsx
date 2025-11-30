@@ -932,12 +932,12 @@ export function MobileFlow() {
                       </p>
                       <p className="text-xs text-emerald-300/80 italic">
                         {language === 'ru' 
-                          ? '✅ Результат: не проигрывает НИКОГДА. Вот что даёт продуманность!'
+                          ? '✅ Результат: побеждает ЧАЩЕ всех. Вот что даёт продуманность!'
                           : language === 'ar'
-                            ? '✅ النتيجة: لا يخسر أبداً. هذا ما يمنحه التخطيط!'
+                            ? '✅ النتيجة: يفوز أكثر من غيره. هذا ما يمنحه التخطيط!'
                             : language === 'zh'
-                              ? '✅ 结果：永远不输。这就是深思熟虑的力量！'
-                              : '✅ Result: NEVER loses. That\'s what thinking ahead gives you!'}
+                              ? '✅ 结果：赢得最多。这就是深思熟虑的力量！'
+                              : '✅ Result: wins MORE often. That\'s what thinking ahead gives you!'}
                       </p>
                     </div>
                   </div>
@@ -971,17 +971,17 @@ export function MobileFlow() {
                 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-cyan-500 flex items-center justify-center text-white font-bold">X</div>
-                      <span className="text-white font-medium text-sm">{t(language, 'xPlayer')}</span>
+                      <span className="text-white font-semibold">{t(language, 'xPlayer')}</span>
                     </div>
                     <StrategySelect player="X" strategy={xStrategy} onStrategyChange={setXStrategy} disabled={status==='playing'} language={language} />
                   </div>
                   
                   <div className="p-3 rounded-xl bg-pink-500/10 border border-pink-500/30">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-pink-500 flex items-center justify-center text-white font-bold">O</div>
-                      <span className="text-white font-medium text-sm">{t(language, 'oPlayer')}</span>
+                      <span className="text-white font-semibold">{t(language, 'oPlayer')}</span>
                     </div>
                     <StrategySelect player="O" strategy={oStrategy} onStrategyChange={setOStrategy} disabled={status==='playing'} language={language} />
                   </div>
