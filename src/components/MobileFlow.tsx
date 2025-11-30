@@ -575,22 +575,22 @@ export function MobileFlow() {
                   <span className="text-3xl">🧠</span>
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2">
-                  {language === 'ru' ? 'Что такое стратегия?' : language === 'ar' ? 'ما هي الاستراتيجية؟' : language === 'zh' ? '什么是策略？' : 'What is Strategy?'}
+                  {language === 'ru' ? 'Типы мышления' : language === 'ar' ? 'أنواع التفكير' : language === 'zh' ? '思维类型' : 'Ways of Thinking'}
                 </h2>
                 <p className="text-white/70 text-sm leading-relaxed">
                   {language === 'ru' 
-                    ? 'Стратегия — это план действий. Как ты думаешь перед ходом? Компьютер тоже думает по-разному!'
+                    ? 'Как мы принимаем решения? Посмотри на 4 типа поведения и подумай — какой даёт лучший результат?'
                     : language === 'ar' 
-                      ? 'الاستراتيجية هي خطة عمل. كيف تفكر قبل الحركة؟ الكمبيوتر يفكر بطرق مختلفة أيضًا!'
+                      ? 'كيف نتخذ القرارات؟ انظر إلى 4 أنواع من السلوك وفكر - أيها يعطي أفضل نتيجة؟'
                       : language === 'zh'
-                        ? '策略是行动计划。你下棋前怎么想？电脑也会用不同的方式思考！'
-                        : 'Strategy is a plan of action. How do you think before a move? The computer also thinks in different ways!'}
+                        ? '我们如何做决定？看看4种行为类型，想想哪种效果最好？'
+                        : 'How do we make decisions? Look at 4 behavior types and think — which gives the best result?'}
                 </p>
               </div>
 
               {/* Карточки стратегий с объяснениями */}
               <div className="space-y-3 mb-5">
-                {/* Случайный */}
+                {/* Импульсивный / Без плана */}
                 <div className="p-4 rounded-xl bg-slate-800/80 border border-yellow-500/30">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-xl bg-yellow-500 flex items-center justify-center flex-shrink-0 shadow-lg">
@@ -598,22 +598,31 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-yellow-400 mb-1">
-                        {language === 'ru' ? 'Случайный' : language === 'ar' ? 'عشوائي' : language === 'zh' ? '随机' : 'Random'}
+                        {language === 'ru' ? 'Импульсивный' : language === 'ar' ? 'اندفاعي' : language === 'zh' ? '冲动型' : 'Impulsive'}
                       </div>
-                      <p className="text-sm text-white/80 leading-relaxed">
+                      <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
-                          ? '🎯 Ходит куда попало, не думает. Как малыш, который тыкает пальцем наугад!'
+                          ? 'Нет плана. Решения "на авось". Делает что попало, не думая о последствиях.'
                           : language === 'ar'
-                            ? '🎯 يتحرك عشوائياً بدون تفكير. مثل طفل يضغط عشوائياً!'
+                            ? 'بدون خطة. قرارات عشوائية. يفعل أي شيء دون التفكير في العواقب.'
                             : language === 'zh'
-                              ? '🎯 随便走，不思考。就像小孩子随便乱点！'
-                              : '🎯 Moves randomly without thinking. Like a toddler poking randomly!'}
+                              ? '没有计划。随意决定。不考虑后果就随便做。'
+                              : 'No plan. Random decisions. Does whatever without thinking of consequences.'}
+                      </p>
+                      <p className="text-xs text-yellow-300/80 italic">
+                        {language === 'ru' 
+                          ? '⚠️ Результат: почти всегда проигрыш. Удача не заменит план!'
+                          : language === 'ar'
+                            ? '⚠️ النتيجة: خسارة شبه دائمة. الحظ لا يحل محل الخطة!'
+                            : language === 'zh'
+                              ? '⚠️ 结果：几乎总是输。运气代替不了计划！'
+                              : '⚠️ Result: almost always loses. Luck won\'t replace a plan!'}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Защитный */}
+                {/* Оборонительный */}
                 <div className="p-4 rounded-xl bg-slate-800/80 border border-blue-500/30">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
@@ -621,22 +630,31 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-blue-400 mb-1">
-                        {language === 'ru' ? 'Защитник' : language === 'ar' ? 'دفاعي' : language === 'zh' ? '防守型' : 'Defensive'}
+                        {language === 'ru' ? 'Оборона' : language === 'ar' ? 'دفاعي' : language === 'zh' ? '防守型' : 'Defensive'}
                       </div>
-                      <p className="text-sm text-white/80 leading-relaxed">
+                      <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
-                          ? '🎯 Сначала блокирует врага, потом думает о победе. Осторожный игрок!'
+                          ? 'Только защищается. Боится рисковать. Реагирует на чужие действия, но сам не создаёт возможности.'
                           : language === 'ar'
-                            ? '🎯 يحظر العدو أولاً، ثم يفكر في الفوز. لاعب حذر!'
+                            ? 'يدافع فقط. يخاف المخاطرة. يتفاعل مع أفعال الآخرين ولا يخلق فرصاً.'
                             : language === 'zh'
-                              ? '🎯 先阻挡对手，再考虑赢。谨慎的玩家！'
-                              : '🎯 Blocks the enemy first, then thinks about winning. A careful player!'}
+                              ? '只防守。害怕冒险。只会应对别人，不会创造机会。'
+                              : 'Only defends. Afraid to risk. Reacts to others but doesn\'t create opportunities.'}
+                      </p>
+                      <p className="text-xs text-blue-300/80 italic">
+                        {language === 'ru' 
+                          ? '⚠️ Результат: не проигрывает сразу, но редко побеждает. Выживание ≠ победа.'
+                          : language === 'ar'
+                            ? '⚠️ النتيجة: لا يخسر فوراً لكن نادراً ما يفوز. البقاء ≠ الفوز.'
+                            : language === 'zh'
+                              ? '⚠️ 结果：不会马上输，但很少赢。生存 ≠ 胜利。'
+                              : '⚠️ Result: doesn\'t lose immediately, but rarely wins. Survival ≠ victory.'}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Атакующий */}
+                {/* Агрессор */}
                 <div className="p-4 rounded-xl bg-slate-800/80 border border-red-500/30">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center flex-shrink-0 shadow-lg">
@@ -644,39 +662,57 @@ export function MobileFlow() {
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-red-400 mb-1">
-                        {language === 'ru' ? 'Атакующий' : language === 'ar' ? 'هجومي' : language === 'zh' ? '进攻型' : 'Offensive'}
+                        {language === 'ru' ? 'Агрессор' : language === 'ar' ? 'عدواني' : language === 'zh' ? '攻击型' : 'Aggressor'}
                       </div>
-                      <p className="text-sm text-white/80 leading-relaxed">
+                      <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
-                          ? '🎯 Сначала атакует, пытается победить! Блокирует только если очень надо.'
+                          ? 'Только атакует. Игнорирует угрозы. Хочет победить любой ценой, забывая о защите.'
                           : language === 'ar'
-                            ? '🎯 يهاجم أولاً، يحاول الفوز! يحظر فقط إذا لزم الأمر.'
+                            ? 'يهاجم فقط. يتجاهل التهديدات. يريد الفوز بأي ثمن ناسياً الدفاع.'
                             : language === 'zh'
-                              ? '🎯 先进攻，努力取胜！只在必要时才阻挡。'
-                              : '🎯 Attacks first, tries to win! Only blocks if really needed.'}
+                              ? '只进攻。忽视威胁。不惜一切代价想赢，忘记防守。'
+                              : 'Only attacks. Ignores threats. Wants to win at any cost, forgetting defense.'}
+                      </p>
+                      <p className="text-xs text-red-300/80 italic">
+                        {language === 'ru' 
+                          ? '⚠️ Результат: иногда побеждает, но часто проигрывает из-за слепых зон.'
+                          : language === 'ar'
+                            ? '⚠️ النتيجة: يفوز أحياناً لكن غالباً يخسر بسبب النقاط العمياء.'
+                            : language === 'zh'
+                              ? '⚠️ 结果：有时赢，但经常因为盲点而输。'
+                              : '⚠️ Result: sometimes wins, but often loses due to blind spots.'}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Идеальный */}
+                {/* Взвешенный / Продуманный */}
                 <div className="p-4 rounded-xl bg-slate-800/80 border border-emerald-500/30">
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <span className="text-2xl">🤖</span>
+                      <span className="text-2xl">🧩</span>
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-emerald-400 mb-1">
-                        {language === 'ru' ? 'Идеальный (Minimax)' : language === 'ar' ? 'مثالي (Minimax)' : language === 'zh' ? '完美 (Minimax)' : 'Perfect (Minimax)'}
+                        {language === 'ru' ? 'Продуманный' : language === 'ar' ? 'متوازن' : language === 'zh' ? '深思熟虑' : 'Strategic'}
                       </div>
-                      <p className="text-sm text-white/80 leading-relaxed">
+                      <p className="text-sm text-white/90 leading-relaxed mb-2">
                         {language === 'ru' 
-                          ? '🎯 Просчитывает ВСЕ ходы наперёд! Никогда не проигрывает. Супер-мозг!'
+                          ? 'Думает наперёд. Взвешивает все варианты. Расчёт важнее импульсов. Предусмотрительность и здравомыслие.'
                           : language === 'ar'
-                            ? '🎯 يحسب كل الحركات مسبقاً! لا يخسر أبداً. عقل خارق!'
+                            ? 'يفكر مسبقاً. يزن كل الخيارات. الحساب أهم من الاندفاع. التبصر والحكمة.'
                             : language === 'zh'
-                              ? '🎯 提前计算所有走法！永不输棋。超级大脑！'
-                              : '🎯 Calculates ALL moves ahead! Never loses. Super brain!'}
+                              ? '提前思考。权衡所有选项。计算比冲动重要。深谋远虑，理性思考。'
+                              : 'Thinks ahead. Weighs all options. Calculation over impulse. Foresight and wisdom.'}
+                      </p>
+                      <p className="text-xs text-emerald-300/80 italic">
+                        {language === 'ru' 
+                          ? '✅ Результат: не проигрывает НИКОГДА. Вот что даёт продуманность!'
+                          : language === 'ar'
+                            ? '✅ النتيجة: لا يخسر أبداً. هذا ما يمنحه التخطيط!'
+                            : language === 'zh'
+                              ? '✅ 结果：永远不输。这就是深思熟虑的力量！'
+                              : '✅ Result: NEVER loses. That\'s what thinking ahead gives you!'}
                       </p>
                     </div>
                   </div>
@@ -688,17 +724,17 @@ export function MobileFlow() {
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-xl">💡</span>
                   <span className="font-bold text-purple-300">
-                    {language === 'ru' ? 'Подумай!' : language === 'ar' ? 'فكر!' : language === 'zh' ? '想一想！' : 'Think!'}
+                    {language === 'ru' ? 'Подумай!' : language === 'ar' ? 'فكر!' : language === 'zh' ? '想一想！' : 'Think about it!'}
                   </span>
                 </div>
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-white/90 leading-relaxed">
                   {language === 'ru' 
-                    ? 'Какая стратегия победит? Случайный против Идеального? А если два Идеальных?'
+                    ? 'В жизни тоже так! Импульсивность ведёт к ошибкам. Только оборона — к застою. Агрессия — к конфликтам. А продуманность — к успеху!'
                     : language === 'ar'
-                      ? 'أي استراتيجية ستفوز؟ عشوائي ضد مثالي؟ وماذا لو لعب مثاليان؟'
+                      ? 'الحياة أيضاً هكذا! الاندفاع يؤدي للأخطاء. الدفاع فقط يؤدي للجمود. العدوانية للصراعات. والتخطيط للنجاح!'
                       : language === 'zh'
-                        ? '哪种策略会赢？随机对完美？如果两个完美对战呢？'
-                        : 'Which strategy wins? Random vs Perfect? What if two Perfect ones play?'}
+                        ? '生活也是如此！冲动导致错误。只防守会停滞。攻击性导致冲突。而深思熟虑带来成功！'
+                        : 'Life is the same! Impulsivity leads to mistakes. Defense only leads to stagnation. Aggression to conflicts. And strategic thinking — to success!'}
                 </p>
               </div>
 
