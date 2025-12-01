@@ -405,8 +405,11 @@ export function MobileFlow() {
     openMathGame();
   };
 
-  // Автоматическая игра ИИ
+  // Автоматическая игра ИИ vs ИИ (только для шага 6 - Битва)
   useEffect(() => {
+    // На шаге 3 человек играет сам — не запускаем автоматические ходы ИИ
+    if (step === 3) return;
+    
     if (status === 'playing' && currentPlayer) {
       const delay = getSpeedDelay(speed);
       gameTimeoutRef.current = window.setTimeout(() => {
@@ -420,18 +423,7 @@ export function MobileFlow() {
         gameTimeoutRef.current = null;
       }
     };
-  }, [status, currentPlayer, board]);
-
-  // Авто-старт игры на шаге 3
-  useEffect(() => {
-    if (step === 3 && status === 'idle') {
-      // Небольшая задержка для плавности
-      const timer = setTimeout(() => {
-        startGame();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [step]);
+  }, [status, currentPlayer, board, step]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-4 pb-8">
