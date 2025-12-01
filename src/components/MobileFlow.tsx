@@ -235,6 +235,10 @@ export function MobileFlow() {
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
+    // CRITICAL FIX: Prevent AI from playing in Step 3 (Practice Mode)
+    // Step 3 is Human vs AI, handled by makeHumanMove.
+    if (step === 3) return;
+
     const strategy = player === 'X' ? xStrategy : oStrategy;
     const ai = AI_STRATEGIES[strategy];
     const move = ai.getMove(currentBoard, player);
