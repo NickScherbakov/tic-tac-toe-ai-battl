@@ -1,11 +1,11 @@
-import { Board, Player, getAvailableMoves, makeMove, checkWinner, getOpponent } from './game';
+import { Board, Player, getAvailableMoves, makeMove, checkWinner, getOpponent, BoardSize } from './game';
 
 export type AIStrategy = 'random' | 'minimax' | 'defensive' | 'offensive';
 
 export interface AIPlayer {
   strategy: AIStrategy;
   name: string;
-  getMove: (board: Board, player: Player) => number;
+  getMove: (board: Board, player: Player, size?: BoardSize) => number;
 }
 
 function randomMove(board: Board): number {
@@ -13,12 +13,15 @@ function randomMove(board: Board): number {
   return availableMoves[Math.floor(Math.random() * availableMoves.length)];
 }
 
-function minimax(board: Board, player: Player, isMaximizing: boolean, depth: number = 0): number {
-  const { winner } = checkWinner(board);
+function minimax(board: Board, player: Player, isMaximizing: boolean, size: BoardSize = 3, depth: number = 0, maxDepth: number = 6): number {
+  const { winner } = checkWinner(board, size);
 
   if (winner === player) return 10 - depth;
   if (winner === getOpponent(player)) return depth - 10;
   if (winner === 'draw') return 0;
+  
+  // Limit depth for larger boards
+  if (depth >= maxDepth) return 0;
 
   const availableMoves = getAvailableMoves(board);
   const currentPlayer = isMaximizing ? player : getOpponent(player);
@@ -27,7 +30,7 @@ function minimax(board: Board, player: Player, isMaximizing: boolean, depth: num
     let bestScore = -Infinity;
     for (const move of availableMoves) {
       const newBoard = makeMove(board, move, currentPlayer);
-      const score = minimax(newBoard, player, false, depth + 1);
+      const score = minimax(newBoard, player, false, size, depth + 1, maxDepth);
       bestScore = Math.max(score, bestScore);
     }
     return bestScore;
@@ -35,21 +38,24 @@ function minimax(board: Board, player: Player, isMaximizing: boolean, depth: num
     let bestScore = Infinity;
     for (const move of availableMoves) {
       const newBoard = makeMove(board, move, currentPlayer);
-      const score = minimax(newBoard, player, true, depth + 1);
+      const score = minimax(newBoard, player, true, size, depth + 1, maxDepth);
       bestScore = Math.min(score, bestScore);
     }
     return bestScore;
   }
 }
 
-function minimaxMove(board: Board, player: Player): number {
+function minimaxMove(board: Board, player: Player, size: BoardSize = 3): number {
   const availableMoves = getAvailableMoves(board);
   let bestScore = -Infinity;
   let bestMove = availableMoves[0];
+  
+  // Reduce depth for larger boards to keep performance acceptable
+  const maxDepth = size === 3 ? 9 : size === 4 ? 4 : 3;
 
   for (const move of availableMoves) {
     const newBoard = makeMove(board, move, player);
-    const score = minimax(newBoard, player, false);
+    const score = minimax(newBoard, player, false, size, 0, maxDepth);
     if (score > bestScore) {
       bestScore = score;
       bestMove = move;
@@ -59,13 +65,13 @@ function minimaxMove(board: Board, player: Player): number {
   return bestMove;
 }
 
-function defensiveMove(board: Board, player: Player): number {
+function defensiveMove(board: Board, player: Player, size: BoardSize = 3): number {
   const opponent = getOpponent(player);
   const availableMoves = getAvailableMoves(board);
 
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, opponent);
-    const { winner } = checkWinner(testBoard);
+    const { winner } = checkWinner(testBoard, size);
     if (winner === opponent) {
       return move;
     }
@@ -73,15 +79,18 @@ function defensiveMove(board: Board, player: Player): number {
 
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, player);
-    const { winner } = checkWinner(testBoard);
+    const { winner } = checkWinner(testBoard, size);
     if (winner === player) {
       return move;
     }
   }
 
-  if (board[4] === null) return 4;
+  // Center for any board size
+  const center = Math.floor(size * size / 2);
+  if (board[center] === null) return center;
 
-  const corners = [0, 2, 6, 8].filter((i) => board[i] === null);
+  // Corners for any board size
+  const corners = [0, size - 1, size * (size - 1), size * size - 1].filter((i) => board[i] === null);
   if (corners.length > 0) {
     return corners[Math.floor(Math.random() * corners.length)];
   }
@@ -89,12 +98,12 @@ function defensiveMove(board: Board, player: Player): number {
   return randomMove(board);
 }
 
-function offensiveMove(board: Board, player: Player): number {
+function offensiveMove(board: Board, player: Player, size: BoardSize = 3): number {
   const availableMoves = getAvailableMoves(board);
 
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, player);
-    const { winner } = checkWinner(testBoard);
+    const { winner } = checkWinner(testBoard, size);
     if (winner === player) {
       return move;
     }
@@ -103,15 +112,18 @@ function offensiveMove(board: Board, player: Player): number {
   const opponent = getOpponent(player);
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, opponent);
-    const { winner } = checkWinner(testBoard);
+    const { winner } = checkWinner(testBoard, size);
     if (winner === opponent) {
       return move;
     }
   }
 
-  if (board[4] === null) return 4;
+  // Center for any board size
+  const center = Math.floor(size * size / 2);
+  if (board[center] === null) return center;
 
-  const corners = [0, 2, 6, 8].filter((i) => board[i] === null);
+  // Corners for any board size
+  const corners = [0, size - 1, size * (size - 1), size * size - 1].filter((i) => board[i] === null);
   if (corners.length > 0) {
     return corners[Math.floor(Math.random() * corners.length)];
   }

@@ -10,7 +10,7 @@ import { GameBoard } from '@/components/GameBoard';
 import { BettingPanel } from '@/components/BettingPanel';
 import { StrategySelect } from '@/components/StrategySelect';
 import { SpeedControl, GameSpeed, getSpeedDelay } from '@/components/SpeedControl';
-import { Player, GameStatus, Winner, checkWinner } from '@/lib/game';
+import { Player, GameStatus, Winner, checkWinner, BoardSize, createEmptyBoard } from '@/lib/game';
 import { AIStrategy, AI_STRATEGIES } from '@/lib/ai';
 import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib/betting';
 import { Language, t } from '@/lib/i18n';
@@ -128,6 +128,12 @@ export function MobileFlow() {
   const [practiceWins, setPracticeWins] = useState(0);
   const [showStrategyInfo, setShowStrategyInfo] = useState(true); // показывать объяснение стратегий
   const [isHumanTurn, setIsHumanTurn] = useState(true);
+  const [practiceBoardSize, setPracticeBoardSize] = useState<BoardSize>(3);
+  const [practiceBoard, setPracticeBoard] = useState<Player[]>(createEmptyBoard(3));
+  const [practiceStatus, setPracticeStatus] = useState<GameStatus>('idle');
+  const [practiceWinner, setPracticeWinner] = useState<Winner>(null);
+  const [practiceWinningLine, setPracticeWinningLine] = useState<number[] | null>(null);
+  const [practiceLastMove, setPracticeLastMove] = useState<number | null>(null);
 
   const odds = calculateOdds(xStrategy, oStrategy);
 
@@ -153,31 +159,30 @@ export function MobileFlow() {
       clearTimeout(gameTimeoutRef.current);
       gameTimeoutRef.current = null;
     }
-    setBoard(Array(9).fill(null));
-    setCurrentPlayer('X');
-    setStatus('playing');
-    setWinner(null);
-    setWinningLine(null);
-    setLastMove(null);
+    setPracticeBoard(createEmptyBoard(practiceBoardSize));
+    setPracticeStatus('playing');
+    setPracticeWinner(null);
+    setPracticeWinningLine(null);
+    setPracticeLastMove(null);
     setIsHumanTurn(true);
     setShowStrategyInfo(false);
   };
 
   // Ход человека в практике
   const makeHumanMove = (index: number) => {
-    if (status !== 'playing' || !isHumanTurn || board[index]) return;
+    if (practiceStatus !== 'playing' || !isHumanTurn || practiceBoard[index]) return;
     
-    const newBoard = [...board];
+    const newBoard = [...practiceBoard];
     newBoard[index] = 'X';
-    setBoard(newBoard);
-    setLastMove(index);
+    setPracticeBoard(newBoard);
+    setPracticeLastMove(index);
     playMoveSound(true);
     
-    const result = checkWinner(newBoard);
+    const result = checkWinner(newBoard, practiceBoardSize);
     if (result.winner) {
-      setWinner(result.winner);
-      setWinningLine(result.winningLine);
-      setStatus('finished');
+      setPracticeWinner(result.winner);
+      setPracticeWinningLine(result.winningLine);
+      setPracticeStatus('finished');
       setPracticeGamesPlayed(g => g + 1);
       if (result.winner === 'X') {
         setPracticeWins(w => w + 1);
@@ -189,22 +194,21 @@ export function MobileFlow() {
     
     // Ход ИИ
     setIsHumanTurn(false);
-    setCurrentPlayer('O');
     
     setTimeout(() => {
       const ai = AI_STRATEGIES[practiceAIStrategy];
-      const aiMove = ai.getMove(newBoard, 'O');
+      const aiMove = ai.getMove(newBoard, 'O', practiceBoardSize);
       const aiBoard = [...newBoard];
       aiBoard[aiMove] = 'O';
-      setBoard(aiBoard);
-      setLastMove(aiMove);
+      setPracticeBoard(aiBoard);
+      setPracticeLastMove(aiMove);
       playMoveSound(true);
       
-      const aiResult = checkWinner(aiBoard);
+      const aiResult = checkWinner(aiBoard, practiceBoardSize);
       if (aiResult.winner) {
-        setWinner(aiResult.winner);
-        setWinningLine(aiResult.winningLine);
-        setStatus('finished');
+        setPracticeWinner(aiResult.winner);
+        setPracticeWinningLine(aiResult.winningLine);
+        setPracticeStatus('finished');
         setPracticeGamesPlayed(g => g + 1);
         if (aiResult.winner === 'X') {
           setPracticeWins(w => w + 1);
@@ -212,7 +216,6 @@ export function MobileFlow() {
         }
         try { navigator.vibrate?.(aiResult.winner === 'draw' ? 30 : [20, 30, 20]); } catch {}
       } else {
-        setCurrentPlayer('X');
         setIsHumanTurn(true);
       }
     }, 500);
@@ -610,103 +613,102 @@ export function MobileFlow() {
                   {language === 'ru' ? 'Ты vs ИИ' : language === 'ar' ? 'أنت ضد الذكاء' : language === 'zh' ? '你 vs AI' : 'You vs AI'}
                 </h2>
                 <p className="text-white/60 text-xs mt-1">
-                  {language === 'ru' ? 'Испытай разные стратегии ИИ!' : language === 'ar' ? 'جرب استراتيجيات مختلفة!' : language === 'zh' ? '尝试不同的AI策略！' : 'Try different AI strategies!'}
+                  {language === 'ru' ? 'Нажми на клетку, чтобы сделать ход!' : language === 'ar' ? 'انقر على خلية للتحرك!' : language === 'zh' ? '点击格子来走棋！' : 'Tap a cell to make your move!'}
                 </p>
               </div>
 
-              {/* Объяснение стратегий (сворачиваемое) */}
-              {showStrategyInfo && status === 'idle' && (
-                <div className="mb-4 p-4 rounded-xl bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border border-indigo-500/30">
-                  <div className="font-bold text-indigo-300 mb-3 text-sm flex items-center gap-2">
-                    <span>🧠</span>
-                    {language === 'ru' ? 'Что такое стратегия?' : language === 'ar' ? 'ما هي الاستراتيجية؟' : language === 'zh' ? '什么是策略？' : 'What is a strategy?'}
+              {/* Выбор размера поля */}
+              {practiceStatus === 'idle' && (
+                <div className="mb-4 p-3 rounded-xl bg-gradient-to-br from-violet-900/50 to-purple-900/50 border border-violet-500/30">
+                  <div className="text-white/80 text-xs mb-2 font-medium text-center">
+                    {language === 'ru' ? '📐 Размер поля:' : language === 'ar' ? '📐 حجم اللوحة:' : language === 'zh' ? '📐 棋盘大小：' : '📐 Board size:'}
                   </div>
-                  <p className="text-white/80 text-xs leading-relaxed mb-3">
-                    {language === 'ru' 
-                      ? 'Стратегия — это план действий. У каждого ИИ своя "личность": кто-то рискует, кто-то защищается, а кто-то просчитывает всё наперёд.'
-                      : language === 'ar'
-                        ? 'الاستراتيجية هي خطة عمل. كل ذكاء له شخصيته: البعض يخاطر، والبعض يدافع، والبعض يحسب كل شيء.'
-                        : language === 'zh'
-                          ? '策略是行动计划。每个AI都有自己的"性格"：有的冒险，有的防守，有的深思熟虑。'
-                          : 'Strategy is an action plan. Each AI has its personality: some risk, some defend, some calculate everything.'}
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="p-2 rounded-lg bg-black/30 border border-rose-500/30">
-                      <div className="font-bold text-rose-400 flex items-center gap-1">🎲 {language === 'ru' ? 'Импульсивная' : language === 'ar' ? 'عشوائية' : language === 'zh' ? '冲动型' : 'Impulsive'}</div>
-                      <div className="text-white/70 mt-1">{language === 'ru' ? 'Ходит случайно' : language === 'ar' ? 'يتحرك عشوائياً' : language === 'zh' ? '随机走棋' : 'Random moves'}</div>
-                    </div>
-                    <div className="p-2 rounded-lg bg-black/30 border border-blue-500/30">
-                      <div className="font-bold text-blue-400 flex items-center gap-1">🛡️ {language === 'ru' ? 'Оборонительная' : language === 'ar' ? 'دفاعية' : language === 'zh' ? '防守型' : 'Defensive'}</div>
-                      <div className="text-white/70 mt-1">{language === 'ru' ? 'Только блокирует' : language === 'ar' ? 'يحظر فقط' : language === 'zh' ? '只防守' : 'Only blocks'}</div>
-                    </div>
-                    <div className="p-2 rounded-lg bg-black/30 border border-orange-500/30">
-                      <div className="font-bold text-orange-400 flex items-center gap-1">⚔️ {language === 'ru' ? 'Наступательная' : language === 'ar' ? 'هجومية' : language === 'zh' ? '进攻型' : 'Offensive'}</div>
-                      <div className="text-white/70 mt-1">{language === 'ru' ? 'Только атакует' : language === 'ar' ? 'يهاجم فقط' : language === 'zh' ? '只进攻' : 'Only attacks'}</div>
-                    </div>
-                    <div className="p-2 rounded-lg bg-black/30 border border-emerald-500/30">
-                      <div className="font-bold text-emerald-400 flex items-center gap-1">🧠 {language === 'ru' ? 'Расчётливая' : language === 'ar' ? 'محسوبة' : language === 'zh' ? '精算型' : 'Calculated'}</div>
-                      <div className="text-white/70 mt-1">{language === 'ru' ? 'Думает наперёд' : language === 'ar' ? 'يفكر مسبقاً' : language === 'zh' ? '深谋远虑' : 'Thinks ahead'}</div>
-                    </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([3, 4, 5] as BoardSize[]).map((size) => {
+                      const isActive = practiceBoardSize === size;
+                      return (
+                        <button
+                          key={size}
+                          onClick={() => {
+                            setPracticeBoardSize(size);
+                            setPracticeBoard(createEmptyBoard(size));
+                          }}
+                          className={`p-3 rounded-lg text-center transition-all ${
+                            isActive 
+                              ? 'bg-gradient-to-br from-violet-500 to-purple-500 text-white shadow-lg scale-105' 
+                              : 'bg-black/30 border border-white/10 text-white/70 hover:bg-white/10'
+                          }`}
+                        >
+                          <div className="text-lg font-bold">{size}×{size}</div>
+                          <div className="text-[10px] opacity-70">
+                            {size === 3 && (language === 'ru' ? 'Классика' : 'Classic')}
+                            {size === 4 && (language === 'ru' ? 'Средний' : 'Medium')}
+                            {size === 5 && (language === 'ru' ? 'Большой' : 'Large')}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Выбор стратегии ИИ-противника */}
-              <div className="mb-4 p-3 rounded-xl bg-slate-800/60 border border-slate-600/30">
-                <div className="text-white/80 text-xs mb-2 font-medium">
-                  {language === 'ru' ? '🤖 Выбери противника:' : language === 'ar' ? '🤖 اختر خصمك:' : language === 'zh' ? '🤖 选择对手：' : '🤖 Choose opponent:'}
+              {practiceStatus === 'idle' && (
+                <div className="mb-4 p-3 rounded-xl bg-slate-800/60 border border-slate-600/30">
+                  <div className="text-white/80 text-xs mb-2 font-medium">
+                    {language === 'ru' ? '🤖 Выбери противника:' : language === 'ar' ? '🤖 اختر خصمك:' : language === 'zh' ? '🤖 选择对手：' : '🤖 Choose opponent:'}
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {(['random', 'defensive', 'offensive', 'minimax'] as AIStrategy[]).map((strat) => {
+                      const isActive = practiceAIStrategy === strat;
+                      const icons: Record<AIStrategy, string> = { random: '🎲', defensive: '🛡️', offensive: '⚔️', minimax: '🧠' };
+                      const colors: Record<AIStrategy, string> = {
+                        random: 'from-rose-500 to-pink-500 border-rose-500/50',
+                        defensive: 'from-blue-500 to-cyan-500 border-blue-500/50',
+                        offensive: 'from-orange-500 to-amber-500 border-orange-500/50',
+                        minimax: 'from-emerald-500 to-green-500 border-emerald-500/50',
+                      };
+                      return (
+                        <button
+                          key={strat}
+                          onClick={() => setPracticeAIStrategy(strat)}
+                          className={`p-2 rounded-lg text-center transition-all ${
+                            isActive 
+                              ? `bg-gradient-to-br ${colors[strat]} text-white shadow-lg scale-105` 
+                              : 'bg-black/30 border border-white/10 text-white/70 hover:bg-white/10'
+                          }`}
+                        >
+                          <div className="text-xl mb-1">{icons[strat]}</div>
+                          <div className="text-[10px] font-medium truncate">
+                            {strat === 'random' && (language === 'ru' ? 'Имп.' : language === 'ar' ? 'عشو' : language === 'zh' ? '冲动' : 'Imp.')}
+                            {strat === 'defensive' && (language === 'ru' ? 'Обор.' : language === 'ar' ? 'دفا' : language === 'zh' ? '防守' : 'Def.')}
+                            {strat === 'offensive' && (language === 'ru' ? 'Наст.' : language === 'ar' ? 'هجو' : language === 'zh' ? '进攻' : 'Off.')}
+                            {strat === 'minimax' && (language === 'ru' ? 'Расч.' : language === 'ar' ? 'حسا' : language === 'zh' ? '精算' : 'Calc.')}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {(['random', 'defensive', 'offensive', 'minimax'] as AIStrategy[]).map((strat) => {
-                    const isActive = practiceAIStrategy === strat;
-                    const icons: Record<AIStrategy, string> = { random: '🎲', defensive: '🛡️', offensive: '⚔️', minimax: '🧠' };
-                    const colors: Record<AIStrategy, string> = {
-                      random: 'from-rose-500 to-pink-500 border-rose-500/50',
-                      defensive: 'from-blue-500 to-cyan-500 border-blue-500/50',
-                      offensive: 'from-orange-500 to-amber-500 border-orange-500/50',
-                      minimax: 'from-emerald-500 to-green-500 border-emerald-500/50',
-                    };
-                    return (
-                      <button
-                        key={strat}
-                        onClick={() => setPracticeAIStrategy(strat)}
-                        disabled={status === 'playing'}
-                        className={`p-2 rounded-lg text-center transition-all ${
-                          isActive 
-                            ? `bg-gradient-to-br ${colors[strat]} text-white shadow-lg scale-105` 
-                            : 'bg-black/30 border border-white/10 text-white/70 hover:bg-white/10'
-                        } disabled:opacity-50`}
-                      >
-                        <div className="text-xl mb-1">{icons[strat]}</div>
-                        <div className="text-[10px] font-medium truncate">
-                          {strat === 'random' && (language === 'ru' ? 'Имп.' : language === 'ar' ? 'عشو' : language === 'zh' ? '冲动' : 'Imp.')}
-                          {strat === 'defensive' && (language === 'ru' ? 'Обор.' : language === 'ar' ? 'دفا' : language === 'zh' ? '防守' : 'Def.')}
-                          {strat === 'offensive' && (language === 'ru' ? 'Наст.' : language === 'ar' ? 'هجو' : language === 'zh' ? '进攻' : 'Off.')}
-                          {strat === 'minimax' && (language === 'ru' ? 'Расч.' : language === 'ar' ? 'حسا' : language === 'zh' ? '精算' : 'Calc.')}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               {/* Игровое поле */}
               <div className="rounded-xl bg-black/30 border border-white/5 p-3 mb-4">
                 <GameBoard 
-                  board={board} 
-                  winningLine={winningLine} 
-                  lastMove={lastMove}
+                  board={practiceBoard} 
+                  winningLine={practiceWinningLine} 
+                  lastMove={practiceLastMove}
                   onCellClick={makeHumanMove}
-                  disabled={status !== 'playing' || !isHumanTurn}
+                  disabled={practiceStatus !== 'playing' || !isHumanTurn}
+                  size={practiceBoardSize}
                 />
               </div>
 
               {/* Подсказка хода */}
-              {status === 'playing' && (
+              {practiceStatus === 'playing' && (
                 <div className={`mb-3 p-3 rounded-lg text-center text-sm font-medium ${
                   isHumanTurn 
-                    ? 'bg-cyan-500/20 border border-cyan-500/30 text-cyan-300' 
+                    ? 'bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 animate-pulse' 
                     : 'bg-pink-500/20 border border-pink-500/30 text-pink-300'
                 }`}>
                   {isHumanTurn 
@@ -715,23 +717,33 @@ export function MobileFlow() {
                   }
                 </div>
               )}
+
+              {/* Начальное состояние - призыв к действию */}
+              {practiceStatus === 'idle' && (
+                <div className="mb-3 p-4 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 text-center">
+                  <span className="text-2xl mb-2 block">🎯</span>
+                  <span className="text-white font-medium">
+                    {language === 'ru' ? 'Нажми "Начать игру" и кликай на клетки!' : language === 'ar' ? 'اضغط ابدأ وانقر على الخلايا!' : language === 'zh' ? '点击开始游戏，然后点击格子！' : 'Press Start and tap the cells!'}
+                  </span>
+                </div>
+              )}
               
               {/* Результат */}
-              {status === 'finished' && winner && (
+              {practiceStatus === 'finished' && practiceWinner && (
                 <div className={`mb-3 p-4 rounded-xl text-center ${
-                  winner === 'X' 
+                  practiceWinner === 'X' 
                     ? 'bg-emerald-500/20 border border-emerald-500/30' 
-                    : winner === 'O'
+                    : practiceWinner === 'O'
                       ? 'bg-rose-500/20 border border-rose-500/30'
                       : 'bg-yellow-500/20 border border-yellow-500/30'
                 }`}>
                   <span className="text-2xl mr-2">
-                    {winner === 'X' ? '🎉' : winner === 'O' ? '🤖' : '🤝'}
+                    {practiceWinner === 'X' ? '🎉' : practiceWinner === 'O' ? '🤖' : '🤝'}
                   </span>
                   <span className="text-white font-medium">
-                    {winner === 'X' 
+                    {practiceWinner === 'X' 
                       ? (language === 'ru' ? 'Ты победил!' : language === 'ar' ? 'فزت!' : language === 'zh' ? '你赢了！' : 'You won!')
-                      : winner === 'O'
+                      : practiceWinner === 'O'
                         ? (language === 'ru' ? 'ИИ победил' : language === 'ar' ? 'فاز الذكاء' : language === 'zh' ? 'AI赢了' : 'AI won')
                         : (language === 'ru' ? 'Ничья!' : language === 'ar' ? 'تعادل!' : language === 'zh' ? '平局！' : 'Draw!')
                     }
@@ -750,19 +762,26 @@ export function MobileFlow() {
               <div className="flex gap-3">
                 <button 
                   onClick={startPracticeGame} 
-                  disabled={status === 'playing' && isHumanTurn}
+                  disabled={practiceStatus === 'playing' && isHumanTurn}
                   className="flex-1 h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-green-500 
                              text-white font-semibold shadow-lg shadow-emerald-500/25
                              disabled:opacity-50 disabled:cursor-not-allowed
                              hover:shadow-emerald-500/40 active:scale-[0.98] transition-all"
                 >
-                  {status === 'playing' 
+                  {practiceStatus === 'playing' 
                     ? (language === 'ru' ? '🎮 Играем...' : language === 'ar' ? '🎮 نلعب...' : language === 'zh' ? '🎮 游戏中...' : '🎮 Playing...')
                     : (language === 'ru' ? '▶ Начать игру' : language === 'ar' ? '▶ ابدأ اللعب' : language === 'zh' ? '▶ 开始游戏' : '▶ Start Game')
                   }
                 </button>
                 <button 
-                  onClick={() => { setBoard(Array(9).fill(null)); setWinner(null); setStatus('idle'); setShowStrategyInfo(true); }} 
+                  onClick={() => { 
+                    setPracticeBoard(createEmptyBoard(practiceBoardSize)); 
+                    setPracticeWinner(null); 
+                    setPracticeStatus('idle'); 
+                    setPracticeWinningLine(null);
+                    setPracticeLastMove(null);
+                    setIsHumanTurn(true);
+                  }} 
                   className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 text-white text-xl
                              hover:bg-white/10 active:scale-95 transition-all"
                 >
@@ -771,7 +790,7 @@ export function MobileFlow() {
               </div>
               
               {/* Кнопка "Далее" после нескольких игр */}
-              {practiceGamesPlayed >= 2 && (
+              {practiceGamesPlayed >= 1 && (
                 <button 
                   onClick={next} 
                   className="w-full mt-3 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 
