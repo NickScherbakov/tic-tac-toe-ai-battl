@@ -132,7 +132,7 @@ export function MobileFlow() {
   const odds = calculateOdds(xStrategy, oStrategy);
 
   const [stepKV, setStepKV] = useKV<number>('mobile-step', 1);
-  const step = stepKV ?? 1;
+  const step = Number(stepKV ?? 1);
   const setStep = (n: number) => setStepKV(n);
 
   // Названия шагов
@@ -387,8 +387,8 @@ export function MobileFlow() {
 
   // Автоматическая игра ИИ vs ИИ (только для шага 6 - Битва)
   useEffect(() => {
-    // На шаге 3 человек играет сам — не запускаем автоматические ходы ИИ
-    if (step === 3) return;
+    // Авто-игра только на шаге 6 (Битва)
+    if (step !== 6) return;
     
     if (status === 'playing' && currentPlayer) {
       const delay = getSpeedDelay(speed);
