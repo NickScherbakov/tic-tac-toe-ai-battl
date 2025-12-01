@@ -198,6 +198,18 @@ export function MobileFlow() {
     setTimeout(() => {
       const ai = AI_STRATEGIES[practiceAIStrategy];
       const aiMove = ai.getMove(newBoard, 'O', practiceBoardSize);
+      
+      // Если ИИ не может сделать ход (все клетки заняты или ошибка)
+      if (aiMove === undefined || aiMove === -1 || aiMove >= practiceBoardSize * practiceBoardSize) {
+        // Это ничья (не должно происходить если checkWinner работает правильно)
+        setPracticeWinner('draw');
+        setPracticeWinningLine(null);
+        setPracticeStatus('finished');
+        setPracticeGamesPlayed(g => g + 1);
+        try { navigator.vibrate?.(30); } catch {}
+        return;
+      }
+      
       const aiBoard = [...newBoard];
       aiBoard[aiMove] = 'O';
       setPracticeBoard(aiBoard);

@@ -10,6 +10,7 @@ export interface AIPlayer {
 
 function randomMove(board: Board): number {
   const availableMoves = getAvailableMoves(board);
+  if (availableMoves.length === 0) return -1;
   return availableMoves[Math.floor(Math.random() * availableMoves.length)];
 }
 
@@ -47,6 +48,8 @@ function minimax(board: Board, player: Player, isMaximizing: boolean, size: Boar
 
 function minimaxMove(board: Board, player: Player, size: BoardSize = 3): number {
   const availableMoves = getAvailableMoves(board);
+  if (availableMoves.length === 0) return -1;
+  
   let bestScore = -Infinity;
   let bestMove = availableMoves[0];
   
@@ -68,6 +71,8 @@ function minimaxMove(board: Board, player: Player, size: BoardSize = 3): number 
 function defensiveMove(board: Board, player: Player, size: BoardSize = 3): number {
   const opponent = getOpponent(player);
   const availableMoves = getAvailableMoves(board);
+  
+  if (availableMoves.length === 0) return -1;
 
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, opponent);
@@ -100,6 +105,8 @@ function defensiveMove(board: Board, player: Player, size: BoardSize = 3): numbe
 
 function offensiveMove(board: Board, player: Player, size: BoardSize = 3): number {
   const availableMoves = getAvailableMoves(board);
+  
+  if (availableMoves.length === 0) return -1;
 
   for (const move of availableMoves) {
     const testBoard = makeMove(board, move, player);

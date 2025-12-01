@@ -69,6 +69,7 @@ export function getWinningCombinations(size: BoardSize): number[][] {
 }
 
 export function checkWinner(board: Board, size: BoardSize = 3): { winner: Winner; winningLine: number[] | null } {
+  const expectedLength = size * size;
   const combinations = size === 3 ? WINNING_COMBINATIONS : getWinningCombinations(size);
   
   for (const combination of combinations) {
@@ -78,7 +79,9 @@ export function checkWinner(board: Board, size: BoardSize = 3): { winner: Winner
     }
   }
 
-  if (board.every((cell) => cell !== null)) {
+  // Check draw: all cells filled (only check up to expectedLength)
+  const relevantCells = board.slice(0, expectedLength);
+  if (relevantCells.length === expectedLength && relevantCells.every((cell) => cell !== null)) {
     return { winner: 'draw', winningLine: null };
   }
 
