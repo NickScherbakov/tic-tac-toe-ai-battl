@@ -97,7 +97,6 @@ export function MobileFlow() {
   const [winner, setWinner] = useState<Winner>(null);
   const [winningLine, setWinningLine] = useState<number[] | null>(null);
   const [lastMove, setLastMove] = useState<number | null>(null);
-  const [isThinking, setIsThinking] = useState(false);
   const gameTimeoutRef = useRef<number | null>(null);
 
   const [xStrategy, setXStrategy] = useState<AIStrategy>('minimax');
@@ -298,25 +297,6 @@ export function MobileFlow() {
       setCurrentPlayer(player === 'X' ? 'O' : 'X');
     }
   };
-
-  // useEffect для автоматических ходов ИИ
-  useEffect(() => {
-    if (status === 'playing' && currentPlayer) {
-      setIsThinking(true);
-      const delay = getSpeedDelay(speed);
-      
-      gameTimeoutRef.current = window.setTimeout(() => {
-        makeAIMove(board, currentPlayer);
-        setIsThinking(false);
-      }, delay);
-
-      return () => {
-        if (gameTimeoutRef.current) {
-          clearTimeout(gameTimeoutRef.current);
-        }
-      };
-    }
-  }, [status, currentPlayer, board]);
 
   // Очистка при размонтировании
   useEffect(() => {
