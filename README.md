@@ -2,6 +2,8 @@
 
 [![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
 
+***English** ∙ [العربية](README.ar.md) ∙ [简体中文](README.zh-CN.md) ∙ [Русский](README.ru.md)*
+
 An educational, multi‑phase Tic‑Tac‑Toe experience designed to teach strategic thinking, risk evaluation, planning vs impulsivity, and the basics of probabilistic decision making. The application provides two parallel flows (desktop & mobile) with identical pedagogical progression.
 
 ## 📚 Learning Structure (Both Desktop & Mobile)
