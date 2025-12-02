@@ -123,9 +123,9 @@ export const translations: Record<Language, Translations> = {
     rulesTitle: 'Game Rules',
     step: 'Step',
     rules: {
-      goal: 'Goal: make a line of three marks (row, column, diagonal).',
-      howToPlay: 'Turns alternate. Tap a cell to place a mark.',
-      winLines: 'Winning lines: 3 in a row, 3 in a column, or 3 diagonally.',
+      goal: 'Goal: make a line of N marks in a row, where N is the board size (3, 4, or 5).',
+      howToPlay: 'Turns alternate. Tap a cell to place a mark. The board adapts to your chosen size.',
+      winLines: 'Winning lines: N in a row, N in a column, or N diagonally. Larger boards = more strategic depth!',
       betting: 'Betting: choose outcome (X, O, Draw), place matches, and watch the game.',
     },
     
@@ -226,9 +226,9 @@ export const translations: Record<Language, Translations> = {
     rulesTitle: 'Правила игры',
     step: 'Шаг',
     rules: {
-      goal: 'Цель: собрать линию из трёх символов (ряд, столбец, диагональ).',
-      howToPlay: 'Ходы по очереди. Нажмите на клетку, чтобы поставить символ.',
-      winLines: 'Выигрышные линии: 3 в ряд, 3 в столбец или 3 по диагонали.',
+      goal: 'Цель: собрать линию из N символов подряд, где N — размер поля (3, 4 или 5).',
+      howToPlay: 'Ходы по очереди. Нажмите на клетку, чтобы поставить символ. Поле подстраивается под выбранный размер.',
+      winLines: 'Выигрышные линии: N в ряд, N в столбец или N по диагонали. Чем больше поле — тем глубже стратегия!',
       betting: 'Ставки: выберите исход (X, O, ничья), поставьте спички и наблюдайте игру.',
     },
     
@@ -329,9 +329,9 @@ export const translations: Record<Language, Translations> = {
     rulesTitle: 'قواعد اللعبة',
     step: 'الخطوة',
     rules: {
-      goal: 'الهدف: صنع صف من ثلاثة رموز (صف، عمود، قطري).',
-      howToPlay: 'الأدوار تتناوب. اضغط على خلية لوضع الرمز.',
-      winLines: 'خطوط الفوز: 3 في صف، 3 في عمود، أو 3 قطريًا.',
+      goal: 'الهدف: جمع خط من N رموز متتالية، حيث N هو حجم اللوحة (3، 4، أو 5).',
+      howToPlay: 'تناوبوا الأدوار. انقر على خلية لوضع رمزك. اللوحة تتكيف مع الحجم المختار.',
+      winLines: 'خطوط الفوز: N في صف، N في عمود، أو N قطرياً. لوحة أكبر = عمق استراتيجي أكبر!',
       betting: 'الرهان: اختر النتيجة (X أو O أو تعادل)، ضع الأعواد، وشاهد المباراة.',
     },
     
@@ -432,10 +432,10 @@ export const translations: Record<Language, Translations> = {
     rulesTitle: '游戏规则',
     step: '步骤',
     rules: {
-      goal: '目标：连成三个相同符号（行、列、对角线）。',
-      howToPlay: '轮流下子。点击格子放置符号。',
-      winLines: '胜利条件：同行三连、同列三连或对角线三连。',
-      betting: '投注：选择结果（X、O、平局），下注火柴并观看比赛。',
+      goal: '目标：收集一行N个连续符号，其中N是棋盘大小（3、4或5）。',
+      howToPlay: '轮流进行。点击单元格放置你的符号。棋盘会根据您选择的大小进行调整。',
+      winLines: '获胜线：一行N个、一列N个或对角线N个。棋盘越大 = 策略深度越大！',
+      betting: '投注：选择结果（X、O、平局），放置火柴，观看游戏。',
     },
     
     players: '玩家',
