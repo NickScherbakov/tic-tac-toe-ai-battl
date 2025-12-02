@@ -227,12 +227,13 @@ export function DesktopFlow() {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none"
+                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/40 cursor-pointer hover:bg-white/15 transition-all"
+                  style={{ colorScheme: 'dark' }}
                 >
-                  <option value="en">English</option>
-                  <option value="ru">Русский</option>
-                  <option value="ar">العربية</option>
-                  <option value="zh">中文</option>
+                  <option value="en" className="bg-slate-800 text-white">English</option>
+                  <option value="ru" className="bg-slate-800 text-white">Русский</option>
+                  <option value="ar" className="bg-slate-800 text-white">العربية</option>
+                  <option value="zh" className="bg-slate-800 text-white">中文</option>
                 </select>
                 <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm flex items-center gap-2">
                   <span>🪵</span>
