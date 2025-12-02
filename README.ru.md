@@ -20,7 +20,7 @@
 ## 🌐 Демо
 
 **[Играть сейчас → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**  
-Принудительный мобильный режим: добавьте `?mobile=1`
+Принудительный мобильный режим: [https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
 
 ## 🧠 Педагогические концепции
 

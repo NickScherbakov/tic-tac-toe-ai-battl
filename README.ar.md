@@ -20,7 +20,7 @@
 ## 🌐 العرض التوضيحي
 
 **[العب الآن → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**  
-فرض تدفق الجوال: أضف `?mobile=1`
+فرض تدفق الجوال: [https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
 
 ## 🧠 المفاهيم التربوية
 

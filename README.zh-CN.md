@@ -20,7 +20,7 @@
 ## 🌐 在线演示
 
 **[立即游玩 → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**  
-强制移动版流程：添加 `?mobile=1`
+强制移动版流程：[https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
 
 ## 🧠 教学概念
 

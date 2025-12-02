@@ -20,7 +20,7 @@ The interface is intentionally linear to focus attention on one concept per step
 ## 🌐 Live Demo
 
 **[Play Now → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**  
-Force mobile flow: append `?mobile=1`
+Force mobile flow: [https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
 
 
 ## 🧠 Pedagogical Concepts
