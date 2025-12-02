@@ -23,7 +23,8 @@ export function DesktopFlow() {
   const setLanguage = (l: Language) => setLanguageKV(l);
 
   // Бой ИИ vs ИИ
-  const [board, setBoard] = useState<Player[]>(Array(9).fill(null));
+  const [battleBoardSize, setBattleBoardSize] = useState<BoardSize>(3);
+  const [board, setBoard] = useState<Player[]>(createEmptyBoard(3));
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
   const [status, setStatus] = useState<GameStatus>('idle');
   const [winner, setWinner] = useState<Winner>(null);
@@ -76,7 +77,7 @@ export function DesktopFlow() {
       toast.error(t(language, 'toasts.placeBetFirst'));
       return;
     }
-    setBoard(Array(9).fill(null));
+    setBoard(createEmptyBoard(battleBoardSize));
     setCurrentPlayer('X');
     setStatus('playing');
     setWinner(null);
@@ -91,7 +92,7 @@ export function DesktopFlow() {
     }
     setCurrentBet(null);
     setStatus('idle');
-    setBoard(Array(9).fill(null));
+    setBoard(createEmptyBoard(battleBoardSize));
     setWinner(null);
     setWinningLine(null);
     setLastMove(null);
@@ -101,7 +102,7 @@ export function DesktopFlow() {
   const makeAIMove = (currentBoard: Player[], player: Player) => {
     const strat = player === 'X' ? (xStrategy ?? 'minimax') : (oStrategy ?? 'random');
     const ai = AI_STRATEGIES[strat];
-    const move = ai.getMove(currentBoard, player);
+    const move = ai.getMove(currentBoard, player, battleBoardSize);
     if (move === -1 || move === undefined) {
       // Ничья
       setWinner('draw');
@@ -113,7 +114,7 @@ export function DesktopFlow() {
     setBoard(newBoard);
     setLastMove(move);
     playMoveSound(true);
-    const result = checkWinner(newBoard);
+    const result = checkWinner(newBoard, battleBoardSize);
     if (result.winner) {
       setWinner(result.winner);
       setWinningLine(result.winningLine);
@@ -384,13 +385,20 @@ export function DesktopFlow() {
 
               {step === 6 && (
                 <div className="p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 space-y-6">
-                  <h2 className="text-2xl font-bold text-white">{language==='ru'?'Битва ИИ':'AI Battle'}</h2>
+                  <div className="flex justify-between items-center flex-wrap gap-4">
+                    <h2 className="text-2xl font-bold text-white">{language==='ru'?'Битва ИИ':'AI Battle'}</h2>
+                    <div className="flex gap-2">
+                      {[3,4,5].map(s => (
+                        <button key={s} onClick={() => { setBattleBoardSize(s as BoardSize); setBoard(createEmptyBoard(s as BoardSize)); setStatus('idle'); setWinner(null); setWinningLine(null); setLastMove(null); }} disabled={status==='playing'} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${battleBoardSize===s ? 'bg-rose-600 text-white shadow' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}>{s}×{s}</button>
+                      ))}
+                    </div>
+                  </div>
                   <div className="flex gap-2 text-xs">
                     <span className="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">X: {t(language, `strategies.${xStrategy??'minimax'}` as any)}</span>
                     <span className="px-3 py-1 rounded-lg bg-pink-500/20 text-pink-300 border border-pink-500/30">O: {t(language, `strategies.${oStrategy??'random'}` as any)}</span>
                   </div>
                   <div className="rounded-xl bg-black/30 border border-white/10 p-4">
-                    <GameBoard board={board} winningLine={winningLine} lastMove={lastMove} />
+                    <GameBoard board={board} winningLine={winningLine} lastMove={lastMove} size={battleBoardSize} />
                   </div>
                   {winner && (
                     <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center text-white font-medium text-lg">{winner==='draw'?t(language,'drawResult'):t(language,'playerWins',{player:String(winner)})}</div>

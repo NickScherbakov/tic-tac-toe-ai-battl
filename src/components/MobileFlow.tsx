@@ -91,7 +91,8 @@ export function MobileFlow() {
   const [languageKV, setLanguageKV] = useKV<Language>('mobile-language', 'en');
   const language = languageKV ?? 'en';
   const setLanguage = (l: Language) => setLanguageKV(l);
-  const [board, setBoard] = useState<Player[]>(Array(9).fill(null));
+  const [battleBoardSize, setBattleBoardSize] = useState<BoardSize>(3);
+  const [board, setBoard] = useState<Player[]>(createEmptyBoard(3));
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
   const [status, setStatus] = useState<GameStatus>('idle');
   const [winner, setWinner] = useState<Winner>(null);
@@ -186,7 +187,7 @@ export function MobileFlow() {
       setPracticeGamesPlayed(g => g + 1);
       if (result.winner === 'X') {
         setPracticeWins(w => w + 1);
-        playWinSound();
+        playWinSound(true);
       }
       try { navigator.vibrate?.(result.winner === 'draw' ? 30 : [20, 30, 20]); } catch {}
       return;
@@ -224,7 +225,7 @@ export function MobileFlow() {
         setPracticeGamesPlayed(g => g + 1);
         if (aiResult.winner === 'X') {
           setPracticeWins(w => w + 1);
-          playWinSound();
+          playWinSound(true);
         }
         try { navigator.vibrate?.(aiResult.winner === 'draw' ? 30 : [20, 30, 20]); } catch {}
       } else {
@@ -241,7 +242,7 @@ export function MobileFlow() {
       clearTimeout(gameTimeoutRef.current);
       gameTimeoutRef.current = null;
     }
-    setBoard(Array(9).fill(null));
+    setBoard(createEmptyBoard(battleBoardSize));
     setCurrentPlayer('X');
     setStatus('playing');
     setWinner(null);
@@ -256,13 +257,13 @@ export function MobileFlow() {
 
     const strategy = player === 'X' ? xStrategy : oStrategy;
     const ai = AI_STRATEGIES[strategy];
-    const move = ai.getMove(currentBoard, player);
+    const move = ai.getMove(currentBoard, player, battleBoardSize);
     const newBoard = [...currentBoard];
     newBoard[move] = player;
     setBoard(newBoard);
     setLastMove(move);
     playMoveSound(true);
-    const result = checkWinner(newBoard);
+    const result = checkWinner(newBoard, battleBoardSize);
     if (result.winner) {
       setWinner(result.winner);
       setWinningLine(result.winningLine);
@@ -1230,6 +1231,21 @@ export function MobileFlow() {
                 <h2 className="text-xl font-bold text-white">
                   {language === 'ru' ? 'Битва ИИ!' : language === 'ar' ? 'معركة!' : language === 'zh' ? 'AI对战!' : 'AI Battle!'}
                 </h2>
+                {/* Выбор размера поля */}
+                <div className="flex justify-center gap-2 mb-3">
+                  {[3,4,5].map(s => (
+                    <button 
+                      key={s} 
+                      onClick={() => { setBattleBoardSize(s as BoardSize); setBoard(createEmptyBoard(s as BoardSize)); setStatus('idle'); setWinner(null); setWinningLine(null); setLastMove(null); }}
+                      disabled={status==='playing'}
+                      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        battleBoardSize===s ? 'bg-rose-600 text-white shadow' : 'bg-white/10 text-white/70 hover:bg-white/20'
+                      }`}
+                    >
+                      {s}×{s}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex justify-center items-center gap-2 mt-2">
                   <span className="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 text-xs font-medium border border-cyan-500/30">
                     X: {t(language, `strategies.${xStrategy}` as any)}
@@ -1242,7 +1258,7 @@ export function MobileFlow() {
               </div>
               
               <div className="rounded-xl bg-black/30 border border-white/5 p-3 mb-4">
-                <GameBoard board={board} winningLine={winningLine} lastMove={lastMove} />
+                <GameBoard board={board} winningLine={winningLine} lastMove={lastMove} size={battleBoardSize} />
               </div>
               
               {status === 'finished' && winner && (
@@ -1270,7 +1286,7 @@ export function MobileFlow() {
                   {status === 'playing' ? '⏳ ...' : '🔥 ' + t(language, 'startGame')}
                 </button>
                 <button 
-                  onClick={() => { setBoard(Array(9).fill(null)); setWinner(null); setStatus('idle'); setCurrentBet(null); }} 
+                  onClick={() => { setBoard(createEmptyBoard(battleBoardSize)); setWinner(null); setStatus('idle'); setCurrentBet(null); }} 
                   className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 text-white text-xl
                              hover:bg-white/10 active:scale-95 transition-all"
                 >
