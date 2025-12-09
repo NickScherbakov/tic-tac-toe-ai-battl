@@ -1,6 +1,7 @@
 # 🎮 تيك تاك تو التكيفي بالذكاء الاصطناعي (الاستراتيجية والتفكير في اتخاذ القرار)
 
 [![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
+[![GitHub Streak](https://streak-stats.demolab.com/?user=NickScherbakov&theme=tokyonight&hide_border=true)](https://github.com/NickScherbakov)
 
 *[English](README.md) ∙ **العربية** ∙ [简体中文](README.zh-CN.md) ∙ [Русский](README.ru.md)*
 
