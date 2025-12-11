@@ -1,6 +1,7 @@
 # 🎮 自适应学习井字棋（AI 策略与决策思考）
 
 [![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
+[![GitHub Streak](https://streak-stats.demolab.com/?user=NickScherbakov&theme=tokyonight&hide_border=true)](https://github.com/NickScherbakov)
 
 *[English](README.md) ∙ [العربية](README.ar.md) ∙ **简体中文** ∙ [Русский](README.ru.md)*
 

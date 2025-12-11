@@ -1,6 +1,7 @@
 # 🎮 Adaptive Learning Tic-Tac-Toe (AI Strategy & Decision Thinking)
 
 [![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
+[![GitHub Streak](https://streak-stats.demolab.com/?user=NickScherbakov&theme=tokyonight&hide_border=true)](https://github.com/NickScherbakov)
 
 ***English** ∙ [العربية](README.ar.md) ∙ [简体中文](README.zh-CN.md) ∙ [Русский](README.ru.md)*
 
