@@ -1,11 +1,16 @@
 # 🎮 Adaptive Learning Tic-Tac-Toe (AI Strategy & Decision Thinking)
 
 [![Deploy to GitHub Pages](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/actions/workflows/deploy-pages.yml)
+[![GitHub Stars](https://img.shields.io/github/stars/NickScherbakov/tic-tac-toe-ai-battl?style=for-the-badge)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl/stargazers)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-7c3aed?style=for-the-badge)](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)
+[![Top Language](https://img.shields.io/github/languages/top/NickScherbakov/tic-tac-toe-ai-battl?style=for-the-badge)](https://github.com/NickScherbakov/tic-tac-toe-ai-battl)
 [![GitHub Streak](https://streak-stats.demolab.com/?user=NickScherbakov&theme=tokyonight&hide_border=true)](https://github.com/NickScherbakov)
 
 ***English** ∙ [العربية](README.ar.md) ∙ [简体中文](README.zh-CN.md) ∙ [Русский](README.ru.md)*
 
 An educational, multi‑phase Tic‑Tac‑Toe experience designed to teach strategic thinking, risk evaluation, planning vs impulsivity, and the basics of probabilistic decision making. The application provides two parallel flows (desktop & mobile) with identical pedagogical progression.
+
+![Gameplay GIF placeholder](https://placehold.co/1200x675/0f172a/ffffff?text=Tic-Tac-Toe+AI+Battle+Gameplay+GIF)
 
 ## 📚 Learning Structure (Both Desktop & Mobile)
 
@@ -22,6 +27,8 @@ The interface is intentionally linear to focus attention on one concept per step
 
 **[Play Now → https://nickscherbakov.github.io/tic-tac-toe-ai-battl/](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/)**  
 Force mobile flow: [https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1](https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobile=1)
+
+If you enjoy the project, please **give it a star ⭐ on GitHub** — it helps more players discover the game.
 
 
 ## 🧠 Pedagogical Concepts
@@ -40,9 +47,18 @@ Force mobile flow: [https://nickscherbakov.github.io/tic-tac-toe-ai-battl/?mobil
 - Human practice mode with selectable board size (3, 4, 5).
 - AI vs AI autonomous battle with strategy visualization.
 - Betting panel (educational framing of investment & probability, including draw bets).
+- Replay links, social share buttons, and friend challenges for viral loops.
+- Hall of Fame, achievements, streaks, daily challenges, and brag-card downloads.
 - Multi-language: English, Russian, Arabic, Chinese (simplified).
 - Animations, sound FX (toggleable), haptic pulses on supported devices.
 - Persistent state via `useKV` (strategy, balance, language, bets, step progression).
+
+## Why this game is addictive
+
+- **Fast prediction loop** — every AI battle resolves in seconds, so sharing and “one more round” happen naturally.
+- **Social bragging** — replay links, challenge links, and result cards make it easy to show off a good call.
+- **Retention hooks** — streaks, achievements, Hall of Fame rankings, and daily challenges reward repeat visits.
+- **Low-friction onboarding** — returning visitors can jump straight into a battle without replaying the full tutorial.
 
 ## 🏗️ Tech Stack
 
