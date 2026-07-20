@@ -181,7 +181,8 @@ export function MobileFlow() {
       setStatus('finished');
       setWinner(replay.winner);
       setWinningLine(replay.winningLine);
-      setLastMove(replay.board.reduce((acc, cell, index) => cell ? index : acc, null as number | null));
+      const replayLastMove = replay.board.findLastIndex((cell) => cell !== null);
+      setLastMove(replayLastMove >= 0 ? replayLastMove : null);
       setXStrategy(replay.xStrategy);
       setOStrategy(replay.oStrategy);
       setCurrentBet(null);
