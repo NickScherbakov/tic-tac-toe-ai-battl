@@ -11,12 +11,34 @@ import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib
 import { ensureAudioUnlocked, playBetSound, playEarnSound, playMoveSound, playWinSound } from '@/lib/sound';
 import { Language, t } from '@/lib/i18n';
 import { toast } from 'sonner';
+import { useViralGrowth } from '@/hooks/use-viral-growth';
+import { AchievementPopup, AchievementsCard, DailyChallengeCard, HallOfFameCard, QuickStartButton, SharePanel, saveReplayCardAsImage } from '@/components/ViralWidgets';
+import { parseChallengeHash, parseReplayHash, type BattleReplay, type ChallengeInvite } from '@/lib/viral';
 
 // Desktop пошаговый флоу (аналог MobileFlow, но без изменений мобильной версии)
 // Шаги: 1) Язык, 2) Правила, 3) Практика (человек vs ИИ, выбор размера), 4) Ставки (обучение),
 // 5) Настройка ИИ (стратегии + скорость), 6) Битва ИИ vs ИИ.
 
 export function DesktopFlow() {
+  const {
+    playerName,
+    hasVisited,
+    gamesPlayed,
+    leaderboard,
+    streak,
+    achievements,
+    dailyChallenge,
+    dailyResult,
+    shareSummary,
+    activeAchievement,
+    savePlayerName,
+    dismissAchievement,
+    recordPracticeGame,
+    recordBattleResult,
+  } = useViralGrowth();
+  const [playerNameDraft, setPlayerNameDraft] = useState(playerName);
+  const [sharedReplay, setSharedReplay] = useState<BattleReplay | null>(null);
+  const [challengeInvite, setChallengeInvite] = useState<ChallengeInvite | null>(null);
   // Общий стейт (используем те же ключи что и десктоп ранее где возможно)
   const [languageKV, setLanguageKV] = useKV<Language>('language', 'en');
   const language = languageKV ?? 'en';
@@ -69,6 +91,47 @@ export function DesktopFlow() {
 
   const odds = calculateOdds(xStrategy ?? 'minimax', oStrategy ?? 'random');
 
+  useEffect(() => {
+    setPlayerNameDraft(playerName);
+  }, [playerName]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const replay = parseReplayHash(params.get('replay'));
+    const challenge = parseChallengeHash(params.get('challenge'));
+
+    if (replay) {
+      setSharedReplay(replay);
+      setChallengeInvite(null);
+      setStep(6);
+      setBattleBoardSize(replay.boardSize);
+      setBoard(replay.board);
+      setStatus('finished');
+      setWinner(replay.winner);
+      setWinningLine(replay.winningLine);
+      setLastMove(replay.board.reduce((acc, cell, index) => cell ? index : acc, null as number | null));
+      setXStrategy(replay.xStrategy);
+      setOStrategy(replay.oStrategy);
+      setCurrentBet(null);
+      return;
+    }
+
+    if (challenge) {
+      setChallengeInvite(challenge);
+      setSharedReplay(null);
+      setXStrategy(challenge.xStrategy);
+      setOStrategy(challenge.oStrategy);
+      setBattleBoardSize(challenge.boardSize);
+      setBoard(createEmptyBoard(challenge.boardSize));
+      setWinner(null);
+      setWinningLine(null);
+      setLastMove(null);
+      setStatus('idle');
+      setCurrentBet(null);
+      setStep(4);
+    }
+  }, []);
+
   // Запуск игры (AI vs AI)
   const startAIBattle = () => {
     ensureAudioUnlocked();
@@ -83,6 +146,7 @@ export function DesktopFlow() {
     setWinner(null);
     setWinningLine(null);
     setLastMove(null);
+    setSharedReplay(null);
   };
 
   const resetAIBattle = () => {
@@ -96,6 +160,7 @@ export function DesktopFlow() {
     setWinner(null);
     setWinningLine(null);
     setLastMove(null);
+    setSharedReplay(null);
   };
 
   // Ход ИИ (битва)
@@ -119,6 +184,7 @@ export function DesktopFlow() {
       setWinner(result.winner);
       setWinningLine(result.winningLine);
       setStatus('finished');
+      let resolvedBetResult: BetResult | null = null;
       // Ставка
       if (currentBet) {
         const betType = (currentBet as any).betType as Player | 'draw';
@@ -132,6 +198,7 @@ export function DesktopFlow() {
         }
         const betResult: BetResult = { ...currentBet, winner: result.winner, profit };
         (betResult as any).betType = betType;
+        resolvedBetResult = betResult;
         setBetResults([...betResults, betResult]);
         const finalBalance = (balanceBeforeBet ?? balance) - currentBet.amount + payout;
         setBalance(finalBalance);
@@ -140,6 +207,18 @@ export function DesktopFlow() {
         else if (profit < 0) toast.error(t(language, 'toasts.youLost', { amount: (-profit).toString() }));
         else toast.info(t(language, 'toasts.betReturned'));
       }
+      recordBattleResult({
+        board: newBoard,
+        boardSize: battleBoardSize,
+        winner: result.winner,
+        winningLine: result.winningLine,
+        xStrategy: xStrategy ?? 'minimax',
+        oStrategy: oStrategy ?? 'random',
+        predictedOutcome: currentBet ? ((currentBet as any).betType as Player | 'draw') : null,
+        betResult: resolvedBetResult,
+        xOdds: odds.xOdds,
+        oOdds: odds.oOdds,
+      });
       playWinSound(true);
     } else {
       setCurrentPlayer(player === 'X' ? 'O' : 'X');
@@ -186,7 +265,7 @@ export function DesktopFlow() {
     setPracticeBoard(newBoard); setPracticeLastMove(index); playMoveSound(true);
     const result = checkWinner(newBoard, practiceBoardSize);
     if (result.winner) {
-      setPracticeWinner(result.winner); setPracticeWinningLine(result.winningLine); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); if (result.winner === 'X') { setPracticeWins(w => w + 1); playWinSound(); } return;
+      setPracticeWinner(result.winner); setPracticeWinningLine(result.winningLine); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); recordPracticeGame(practiceAIStrategy); if (result.winner === 'X') { setPracticeWins(w => w + 1); playWinSound(); } return;
     }
     setIsHumanTurn(false);
     setTimeout(() => {
@@ -194,13 +273,13 @@ export function DesktopFlow() {
       const aiMove = ai.getMove(newBoard, 'O', practiceBoardSize);
       if (aiMove === -1 || aiMove === undefined) {
         const drawCheck = checkWinner(newBoard, practiceBoardSize);
-        if (drawCheck.winner === 'draw') { setPracticeWinner('draw'); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); return; }
+        if (drawCheck.winner === 'draw') { setPracticeWinner('draw'); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); recordPracticeGame(practiceAIStrategy); return; }
       }
       const aiBoard = [...newBoard]; aiBoard[aiMove] = 'O';
       setPracticeBoard(aiBoard); setPracticeLastMove(aiMove); playMoveSound(true);
       const aiResult = checkWinner(aiBoard, practiceBoardSize);
       if (aiResult.winner) {
-        setPracticeWinner(aiResult.winner); setPracticeWinningLine(aiResult.winningLine); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); if (aiResult.winner === 'X') { setPracticeWins(w => w + 1); playWinSound(); }
+        setPracticeWinner(aiResult.winner); setPracticeWinningLine(aiResult.winningLine); setPracticeStatus('finished'); setPracticeGamesPlayed(g => g + 1); recordPracticeGame(practiceAIStrategy); if (aiResult.winner === 'X') { setPracticeWins(w => w + 1); playWinSound(); }
       } else { setIsHumanTurn(true); }
     }, 500);
   };
@@ -273,6 +352,23 @@ export function DesktopFlow() {
                   <p className="text-white/70 mb-6 text-sm max-w-prose">
                     {language === 'ru' ? 'Начни с выбора языка интерфейса и перейди к правилам.' : 'Select interface language and continue to the rules.'}
                   </p>
+                  <div className="space-y-4 mb-6">
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                      <label className="mb-2 block text-sm font-medium text-white">{language === 'ru' ? 'Как тебя зовут?' : 'What should we call you?'}</label>
+                      <div className="flex gap-3">
+                        <input
+                          value={playerNameDraft}
+                          onChange={(event) => setPlayerNameDraft(event.target.value)}
+                          placeholder={language === 'ru' ? 'Игрок' : 'Player'}
+                          className="h-12 flex-1 rounded-xl border border-white/10 bg-black/30 px-4 text-white placeholder:text-white/30 focus:border-cyan-400 focus:outline-none"
+                        />
+                        <button onClick={() => savePlayerName(playerNameDraft)} className="rounded-xl bg-white/10 px-4 text-sm font-semibold text-white transition-all hover:bg-white/20">
+                          {language === 'ru' ? 'Сохранить' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                    {hasVisited && <QuickStartButton language={language} onClick={() => setStep(6)} />}
+                  </div>
                   <button onClick={next} className="h-14 w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-500 text-white font-semibold shadow-lg hover:shadow-violet-500/40 active:scale-[0.98] transition-all">
                     {language === 'ru' ? 'К правилам →' : 'Go to Rules →'}
                   </button>
@@ -350,6 +446,11 @@ export function DesktopFlow() {
                 <div className="p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 space-y-6">
                   <h2 className="text-2xl font-bold text-white">{language==='ru'?'Инвестиции':'Investing'}</h2>
                   <p className="text-white/70 text-sm">{language==='ru'?'Сделай ставку и изучи риск / награду.':'Place a bet and learn risk vs reward.'}</p>
+                  {challengeInvite && (
+                    <div className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-4 text-sm text-white">
+                      🥊 {challengeInvite.challengerName} {language === 'ru' ? 'вызвал тебя. Стратегии уже загружены — попробуй поставить против выбора соперника.' : 'challenged you. Strategies are loaded — place a bet against their pick.'}
+                    </div>
+                  )}
                   <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
                     <div className="flex items-center gap-2"><span className="text-2xl">🪵</span><span className="text-white/60 text-sm">{language==='ru'?'Баланс':'Balance'}:</span></div>
                     <span className="text-2xl font-bold text-white">{balance}</span>
@@ -403,10 +504,16 @@ export function DesktopFlow() {
                   {winner && (
                     <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center text-white font-medium text-lg">{winner==='draw'?t(language,'drawResult'):t(language,'playerWins',{player:String(winner)})}</div>
                   )}
+                  {sharedReplay && (
+                    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-sm text-white">
+                      🔁 {sharedReplay.playerName} {language === 'ru' ? 'поделился replay этой битвы.' : 'shared this replay with you.'}
+                    </div>
+                  )}
                   <div className="flex gap-3">
                     <button onClick={startAIBattle} disabled={status==='playing'} className="flex-1 h-14 rounded-xl bg-gradient-to-r from-rose-600 to-orange-500 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow hover:shadow-orange-500/40 active:scale-[0.98] transition-all">{status==='playing'?'⏳ ...':'🔥 ' + t(language,'startGame')}</button>
                     <button onClick={resetAIBattle} className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 text-white text-xl hover:bg-white/10 active:scale-95 transition-all">🔄</button>
                   </div>
+                  <SharePanel language={language} summary={shareSummary} challengeName={challengeInvite?.challengerName} onSaveCard={saveReplayCardAsImage} />
                   <div className="flex gap-2 text-xs">
                     <button onClick={()=>setStep(4)} className="flex-1 h-10 rounded-lg bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all">{language==='ru'?'Ставки':'Betting'}</button>
                     <button onClick={()=>setStep(5)} className="flex-1 h-10 rounded-lg bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 transition-all">{language==='ru'?'Изменить ИИ':'Change AI'}</button>
@@ -417,6 +524,9 @@ export function DesktopFlow() {
 
             {/* RIGHT SIDEBAR (История ставок) */}
             <div className="space-y-6">
+              <HallOfFameCard language={language} leaderboard={leaderboard} gamesPlayed={gamesPlayed} streak={streak} />
+              <DailyChallengeCard language={language} challenge={dailyChallenge} result={dailyResult} onLoad={() => { setBattleBoardSize(dailyChallenge.boardSize); setXStrategy(dailyChallenge.xStrategy); setOStrategy(dailyChallenge.oStrategy); setBoard(createEmptyBoard(dailyChallenge.boardSize)); setWinner(null); setWinningLine(null); setLastMove(null); setStatus('idle'); setCurrentBet(null); setStep(4); }} />
+              <AchievementsCard language={language} achievements={achievements} />
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
                 <h3 className="text-white font-semibold mb-4 text-sm">{language==='ru'?'История ставок':'Bet History'}</h3>
                 {betResults.length === 0 && <p className="text-white/40 text-xs">{language==='ru'?'Пока пусто':'Empty yet'}</p>}
@@ -437,6 +547,7 @@ export function DesktopFlow() {
           </motion.div>
         </AnimatePresence>
       </div>
+      <AchievementPopup achievement={activeAchievement} onClose={dismissAchievement} />
     </div>
   );
 }

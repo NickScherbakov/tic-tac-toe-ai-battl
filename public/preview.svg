@@ -1,0 +1,28 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <rect x="72" y="72" width="1056" height="486" rx="28" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+  <text x="96" y="150" fill="#A5B4FC" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">Predict • Share • Challenge</text>
+  <text x="96" y="238" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="800">Tic-Tac-Toe AI Battle</text>
+  <text x="96" y="304" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="34">Watch AI strategies clash, win bragging rights, and send replay links to friends.</text>
+  <g transform="translate(96 368)">
+    <rect width="240" height="132" rx="24" fill="#06B6D4" fill-opacity="0.14" stroke="#22D3EE" stroke-opacity="0.4"/>
+    <text x="28" y="46" fill="#67E8F9" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">X Strategy</text>
+    <text x="28" y="94" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="800">Calculated</text>
+  </g>
+  <g transform="translate(382 368)">
+    <rect width="240" height="132" rx="24" fill="#EC4899" fill-opacity="0.14" stroke="#F472B6" stroke-opacity="0.4"/>
+    <text x="28" y="46" fill="#F9A8D4" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">O Strategy</text>
+    <text x="28" y="94" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="800">Offensive</text>
+  </g>
+  <g transform="translate(668 368)">
+    <rect width="364" height="132" rx="24" fill="#F59E0B" fill-opacity="0.14" stroke="#FBBF24" stroke-opacity="0.4"/>
+    <text x="28" y="46" fill="#FCD34D" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Built for viral loops</text>
+    <text x="28" y="94" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Daily challenges + replay shares</text>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020617"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+</svg>

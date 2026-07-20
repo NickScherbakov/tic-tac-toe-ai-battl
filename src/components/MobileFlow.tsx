@@ -16,6 +16,9 @@ import { Bet, BetResult, calculateOdds, calculatePayout, createBet } from '@/lib
 import { Language, t } from '@/lib/i18n';
 import { ensureAudioUnlocked, playBetSound, playEarnSound, playMoveSound, playWinSound } from '@/lib/sound';
 import { toast } from 'sonner';
+import { useViralGrowth } from '@/hooks/use-viral-growth';
+import { AchievementPopup, AchievementsCard, DailyChallengeCard, HallOfFameCard, QuickStartButton, SharePanel, saveReplayCardAsImage } from '@/components/ViralWidgets';
+import { parseChallengeHash, parseReplayHash, type BattleReplay, type ChallengeInvite } from '@/lib/viral';
 
 // Иконки шагов - более современные
 const STEP_ICONS = ['🌐', '📚', '🎯', '💰', '⚙️', '🔥'];
@@ -87,6 +90,25 @@ function generateWrongAnswers(correct: number): number[] {
  * 4) ставки и правила, 5) конфиг стратегии ИИ, 6) ИИ vs ИИ.
  */
 export function MobileFlow() {
+  const {
+    playerName,
+    hasVisited,
+    gamesPlayed,
+    leaderboard,
+    streak,
+    achievements,
+    dailyChallenge,
+    dailyResult,
+    shareSummary,
+    activeAchievement,
+    savePlayerName,
+    dismissAchievement,
+    recordPracticeGame,
+    recordBattleResult,
+  } = useViralGrowth();
+  const [playerNameDraft, setPlayerNameDraft] = useState(playerName);
+  const [sharedReplay, setSharedReplay] = useState<BattleReplay | null>(null);
+  const [challengeInvite, setChallengeInvite] = useState<ChallengeInvite | null>(null);
   // общий стейт приложения, упрощённый для мобильного флоу
   const [languageKV, setLanguageKV] = useKV<Language>('mobile-language', 'en');
   const language = languageKV ?? 'en';
@@ -135,12 +157,52 @@ export function MobileFlow() {
   const [practiceWinner, setPracticeWinner] = useState<Winner>(null);
   const [practiceWinningLine, setPracticeWinningLine] = useState<number[] | null>(null);
   const [practiceLastMove, setPracticeLastMove] = useState<number | null>(null);
-
-  const odds = calculateOdds(xStrategy, oStrategy);
-
   const [stepKV, setStepKV] = useKV<number>('mobile-step', 1);
   const step = Number(stepKV ?? 1);
   const setStep = (n: number) => setStepKV(n);
+
+  const odds = calculateOdds(xStrategy, oStrategy);
+
+  useEffect(() => {
+    setPlayerNameDraft(playerName);
+  }, [playerName]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const replay = parseReplayHash(params.get('replay'));
+    const challenge = parseChallengeHash(params.get('challenge'));
+
+    if (replay) {
+      setSharedReplay(replay);
+      setChallengeInvite(null);
+      setStep(6);
+      setBattleBoardSize(replay.boardSize);
+      setBoard(replay.board);
+      setStatus('finished');
+      setWinner(replay.winner);
+      setWinningLine(replay.winningLine);
+      setLastMove(replay.board.reduce((acc, cell, index) => cell ? index : acc, null as number | null));
+      setXStrategy(replay.xStrategy);
+      setOStrategy(replay.oStrategy);
+      setCurrentBet(null);
+      return;
+    }
+
+    if (challenge) {
+      setChallengeInvite(challenge);
+      setSharedReplay(null);
+      setXStrategy(challenge.xStrategy);
+      setOStrategy(challenge.oStrategy);
+      setBattleBoardSize(challenge.boardSize);
+      setBoard(createEmptyBoard(challenge.boardSize));
+      setWinner(null);
+      setWinningLine(null);
+      setLastMove(null);
+      setStatus('idle');
+      setCurrentBet(null);
+      setStep(4);
+    }
+  }, []);
 
   // Названия шагов
   const stepTitles: Record<Language, string[]> = {
@@ -185,6 +247,7 @@ export function MobileFlow() {
       setPracticeWinningLine(result.winningLine);
       setPracticeStatus('finished');
       setPracticeGamesPlayed(g => g + 1);
+      recordPracticeGame(practiceAIStrategy);
       if (result.winner === 'X') {
         setPracticeWins(w => w + 1);
         playWinSound(true);
@@ -207,6 +270,7 @@ export function MobileFlow() {
         setPracticeWinningLine(null);
         setPracticeStatus('finished');
         setPracticeGamesPlayed(g => g + 1);
+        recordPracticeGame(practiceAIStrategy);
         try { navigator.vibrate?.(30); } catch {}
         return;
       }
@@ -223,6 +287,7 @@ export function MobileFlow() {
         setPracticeWinningLine(aiResult.winningLine);
         setPracticeStatus('finished');
         setPracticeGamesPlayed(g => g + 1);
+        recordPracticeGame(practiceAIStrategy);
         if (aiResult.winner === 'X') {
           setPracticeWins(w => w + 1);
           playWinSound(true);
@@ -248,6 +313,7 @@ export function MobileFlow() {
     setWinner(null);
     setWinningLine(null);
     setLastMove(null);
+    setSharedReplay(null);
   };
 
   const makeAIMove = (currentBoard: Player[], player: Player) => {
@@ -268,6 +334,7 @@ export function MobileFlow() {
       setWinner(result.winner);
       setWinningLine(result.winningLine);
       setStatus('finished');
+      let resolvedBetResult: BetResult | null = null;
       // лёгкая вибрация при завершении партии (если поддерживается)
       try {
         if ('vibrate' in navigator) {
@@ -303,6 +370,7 @@ export function MobileFlow() {
         }
         const betResult: BetResult = { ...currentBet, winner: result.winner, profit } as BetResult;
         (betResult as any).betType = betType;
+        resolvedBetResult = betResult;
         setBetResults([...betResults, betResult]);
         const finalBalance = (balanceBeforeBet ?? balance) - currentBet.amount + payout;
         setBalance(finalBalance);
@@ -312,6 +380,18 @@ export function MobileFlow() {
         else if (profit < 0) toast.error(t(language, 'toasts.youLost', { amount: (-profit).toString() }));
         else toast.info(t(language, 'toasts.betReturned'));
       }
+      recordBattleResult({
+        board: newBoard,
+        boardSize: battleBoardSize,
+        winner: result.winner,
+        winningLine: result.winningLine,
+        xStrategy,
+        oStrategy,
+        predictedOutcome: currentBet ? ((currentBet as any).betType as Player | 'draw') : null,
+        betResult: resolvedBetResult,
+        xOdds: odds.xOdds,
+        oOdds: odds.oOdds,
+      });
       playWinSound(true);
     } else {
       setCurrentPlayer(player === 'X' ? 'O' : 'X');
@@ -526,6 +606,25 @@ export function MobileFlow() {
                 </p>
               </div>
               <LanguageSwitcher currentLanguage={language} onLanguageChange={setLanguage} childMode={true} />
+              <div className="mt-5 space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
+                  <label className="mb-2 block text-sm font-medium text-white">
+                    {language === 'ru' ? 'Имя для Hall of Fame' : language === 'ar' ? 'اسمك لقاعة الشهرة' : language === 'zh' ? '你的名人堂昵称' : 'Your Hall of Fame name'}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      value={playerNameDraft}
+                      onChange={(event) => setPlayerNameDraft(event.target.value)}
+                      placeholder={language === 'ru' ? 'Игрок' : 'Player'}
+                      className="h-11 flex-1 rounded-xl border border-white/10 bg-black/30 px-4 text-white placeholder:text-white/30 focus:border-cyan-400 focus:outline-none"
+                    />
+                    <button onClick={() => savePlayerName(playerNameDraft)} className="rounded-xl bg-white/10 px-4 text-sm font-semibold text-white transition-all hover:bg-white/20">
+                      OK
+                    </button>
+                  </div>
+                </div>
+                {hasVisited && <QuickStartButton language={language} onClick={() => setStep(6)} />}
+              </div>
               <button 
                 onClick={next} 
                 className="w-full mt-6 h-14 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 
@@ -838,6 +937,11 @@ export function MobileFlow() {
                         : 'Investment is when you put in resources hoping to get more. But there\'s risk of losing!'}
                 </p>
               </div>
+              {challengeInvite && (
+                <div className="mb-4 rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-4 text-sm text-white">
+                  🥊 {challengeInvite.challengerName} {language === 'ru' ? 'вызвал тебя на матч. Стратегии уже загружены — поставь против его выбора.' : language === 'ar' ? 'تحداك في مباراة. الاستراتيجيات جاهزة — راهن عكس اختياره.' : language === 'zh' ? '向你发起挑战。策略已加载，试着押他的反面。' : 'challenged you to this matchup. Strategies are loaded — bet against their pick.'}
+                </div>
+              )}
 
               {/* Образовательные карточки */}
               <div className="space-y-3 mb-5">
@@ -1273,7 +1377,12 @@ export function MobileFlow() {
                   </span>
                 </motion.div>
               )}
-              
+              {sharedReplay && (
+                <div className="mb-4 rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-sm text-white">
+                  🔁 {sharedReplay.playerName} {language === 'ru' ? 'поделился replay этой битвы.' : language === 'ar' ? 'شارك إعادة هذه المعركة.' : language === 'zh' ? '分享了这场对战回放。' : 'shared this replay with you.'}
+                </div>
+              )}
+               
               <div className="flex gap-3">
                 <button 
                   onClick={startGame} 
@@ -1286,14 +1395,17 @@ export function MobileFlow() {
                   {status === 'playing' ? '⏳ ...' : '🔥 ' + t(language, 'startGame')}
                 </button>
                 <button 
-                  onClick={() => { setBoard(createEmptyBoard(battleBoardSize)); setWinner(null); setStatus('idle'); setCurrentBet(null); }} 
+                  onClick={() => { setBoard(createEmptyBoard(battleBoardSize)); setWinner(null); setStatus('idle'); setCurrentBet(null); setSharedReplay(null); }} 
                   className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 text-white text-xl
                              hover:bg-white/10 active:scale-95 transition-all"
                 >
                   🔄
                 </button>
               </div>
-              
+              <div className="mt-4">
+                <SharePanel language={language} summary={shareSummary} challengeName={challengeInvite?.challengerName} onSaveCard={saveReplayCardAsImage} />
+              </div>
+               
               {/* Быстрые действия */}
               <div className="mt-4 flex gap-2">
                 <button 
@@ -1315,6 +1427,28 @@ export function MobileFlow() {
           )}
         </motion.div>
       </AnimatePresence>
+
+      <div className="mt-6 space-y-4">
+        <HallOfFameCard language={language} leaderboard={leaderboard} gamesPlayed={gamesPlayed} streak={streak} />
+        <DailyChallengeCard
+          language={language}
+          challenge={dailyChallenge}
+          result={dailyResult}
+          onLoad={() => {
+            setBattleBoardSize(dailyChallenge.boardSize);
+            setXStrategy(dailyChallenge.xStrategy);
+            setOStrategy(dailyChallenge.oStrategy);
+            setBoard(createEmptyBoard(dailyChallenge.boardSize));
+            setWinner(null);
+            setWinningLine(null);
+            setLastMove(null);
+            setStatus('idle');
+            setCurrentBet(null);
+            setStep(4);
+          }}
+        />
+        <AchievementsCard language={language} achievements={achievements} />
+      </div>
 
       {/* Модальное окно: Мини-игра "Заработай спички" */}
       <AnimatePresence>
@@ -1453,6 +1587,7 @@ export function MobileFlow() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AchievementPopup achievement={activeAchievement} onClose={dismissAchievement} />
     </div>
   );
 }

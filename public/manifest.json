@@ -1,10 +1,10 @@
 {
-  "name": "AI vs AI Tic-Tac-Toe Battle",
+  "name": "Tic-Tac-Toe AI Battle",
   "short_name": "AI Battle",
-  "description": "Watch AI strategies battle in Tic-Tac-Toe and place bets!",
+  "description": "Predict AI vs AI tic-tac-toe battles, share replays, and challenge friends from your phone home screen.",
   "start_url": "/tic-tac-toe-ai-battl/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [
@@ -21,7 +21,15 @@
       "purpose": "any"
     }
   ],
-  "categories": ["games", "entertainment"],
+  "categories": ["games", "education", "entertainment"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "/tic-tac-toe-ai-battl/preview.svg",
+      "sizes": "1200x630",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ]
 }
