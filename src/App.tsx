@@ -7,7 +7,7 @@ function App() {
   const isTouchMobile = useIsTouchMobile();
 
   useEffect(() => {
-    const title = 'Tic-Tac-Toe AI Battle — Predict, Share, Challenge';
+    const title = 'Tic-Tac-Toe AI Battle — Strategy Showdowns, Replays & Challenges';
     const description = 'Predict AI tic-tac-toe battles, send replay links, and challenge your friends.';
     const currentUrl = window.location.href;
 

@@ -233,7 +233,7 @@ export function updateWinStreak(streak: WinStreak, dateKey: string): WinStreak {
   };
 }
 
-export function getDailyChallenge(dateKey = toDateKey()) : DailyChallenge {
+export function getDailyChallenge(dateKey = toDateKey()): DailyChallenge {
   const seed = dateKey.split('-').reduce((sum, chunk) => sum + Number(chunk), 0);
   const xStrategy = STRATEGY_ORDER[seed % STRATEGY_ORDER.length];
   const oStrategy = STRATEGY_ORDER[(seed + 2) % STRATEGY_ORDER.length];
@@ -283,7 +283,7 @@ export function createLeaderboardEntry(params: {
   predictedOutcome: PredictedOutcome;
   xStrategy: AIStrategy;
   oStrategy: AIStrategy;
-}) : LeaderboardEntry {
+}): LeaderboardEntry {
   return {
     id: params.betResult.id,
     name: params.name,
